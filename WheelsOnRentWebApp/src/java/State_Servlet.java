@@ -14,6 +14,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -65,16 +66,19 @@ public class State_Servlet extends HttpServlet {
             ResultSet rs = pst.executeQuery();
             
              String json;
+             ArrayList<State>  listStates = new ArrayList<State>();
             while(rs.next())
             {
                 State s= new State();
                 s.setState_name(rs.getString("State/Union Territory"));
+                listStates.add(s);
                 //s.setCity_name(rs.getString("City"));
-                Gson g= new Gson();
-              
-                json=g.toJson(s);
-                out.print(json);
+               
             }
+             Gson g= new Gson();
+              
+                json=g.toJson(listStates);
+                out.print(json);
             
            
             
