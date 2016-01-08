@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -37,17 +38,9 @@ public class City_Servlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet City_Servlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet City_Servlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+           
             try{
+                String state=request.getParameter("state");
             String JDBC_driver="com.mysql.jdbc.Driver";
             String DB_URL="jdbc:mysql://localhost:3306/wheels_on_rent";
             Class.forName(JDBC_driver);
@@ -55,21 +48,29 @@ public class City_Servlet extends HttpServlet {
             String db_pass="";
             
             Connection conn=DriverManager.getConnection(DB_URL, db_user, db_pass);
-            String query="SELECT `City` FROM `india_states_cities` WHERE `State/Union Territory` == `Sikkim`";
+            String query="SELECT `City` FROM `india_states_cities` WHERE"+
+                    "`State/Union Territory` =? AND `City` IS NOT NULL";
             PreparedStatement pst =conn.prepareStatement(query);
+           pst.setString(1,state);
             ResultSet rs = pst.executeQuery();
             
              String json;
+             ArrayList<City>  listCity= new ArrayList<City>();
+             if(!rs.next())
+             {
+                 out.print("rs is null");
+             }
             while(rs.next())
             {
                 City c= new City();
                 c.setCity_name(rs.getString("City"));
-                //s.setCity_name(rs.getString("City"));
-                Gson g= new Gson();
-              
-                json=g.toJson(c);
-                out.print(json);
+               
+                listCity.add(c);
             }
+            Gson g= new Gson();
+              
+                json=g.toJson(listCity);
+                out.print(json);
             
            
             
