@@ -2117,9 +2117,8 @@ containing a value of this type.
         public static final int select_dialog_item_material=0x7f030024;
         public static final int select_dialog_multichoice_material=0x7f030025;
         public static final int select_dialog_singlechoice_material=0x7f030026;
-        public static final int spinner_layout=0x7f030027;
-        public static final int support_simple_spinner_dropdown_item=0x7f030028;
-        public static final int vehicle_list=0x7f030029;
+        public static final int support_simple_spinner_dropdown_item=0x7f030027;
+        public static final int vehicle_list=0x7f030028;
     }
     public static final class menu {
         public static final int main=0x7f0c0000;
@@ -2201,15 +2200,6 @@ containing a value of this type.
         public static final int Animation_AppCompat_Dialog=0x7f0b0046;
         public static final int Animation_AppCompat_DropDownUp=0x7f0b0047;
         /** 
-        Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
-    
-
-            Theme customizations available in newer API levels can go in
-            res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
-        
-
         Base application theme for API 11+. This theme completely replaces
         AppBaseTheme from res/values/styles.xml on API 11+ devices.
     
@@ -2221,11 +2211,15 @@ containing a value of this type.
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f0b0124;
-        /**  Application theme. 
+        public static final int AppBaseTheme=0x7f0b0127;
+        /** 
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    
+ Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f0b0125;
+        public static final int AppTheme=0x7f0b0124;
         public static final int Base_AlertDialog_AppCompat=0x7f0b00c4;
         public static final int Base_AlertDialog_AppCompat_Light=0x7f0b00c5;
         public static final int Base_Animation_AppCompat_Dialog=0x7f0b00c0;
@@ -2403,8 +2397,8 @@ containing a value of this type.
     
          */
         public static final int Base_Widget_AppCompat_Toolbar_Button_Navigation=0x7f0b00a9;
-        public static final int MyMaterialTheme=0x7f0b0126;
-        public static final int MyMaterialTheme_Base=0x7f0b0127;
+        public static final int MyMaterialTheme=0x7f0b0125;
+        public static final int MyMaterialTheme_Base=0x7f0b0126;
         public static final int Platform_AppCompat=0x7f0b00ff;
         public static final int Platform_AppCompat_Light=0x7f0b0100;
         public static final int Platform_ThemeOverlay_AppCompat_Dark=0x7f0b0114;
