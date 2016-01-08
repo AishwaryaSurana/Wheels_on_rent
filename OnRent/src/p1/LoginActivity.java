@@ -136,7 +136,7 @@ public class LoginActivity extends Activity
 			super.onPostExecute(result);
 			Log.e("result",result);
 			//if fail or error
-			/*if(result.startsWith("fail") ||
+			if(result.startsWith("fail") ||
 					result.startsWith("error") )
 			{
 				Toast.makeText(LoginActivity.this, result, 5).show();
@@ -149,7 +149,10 @@ public class LoginActivity extends Activity
 					JSONObject obj=new JSONObject(result);
 					int owner_id=obj.getInt("owner_id");
 					String name=obj.getString("name");
+					String surname=obj.getString("surname");
 					String email=obj.getString("email");
+					String contact_no=obj.getString("contact_no");
+					
 					
 					//SharedPreference
 					SharedPreferences sp=
@@ -158,9 +161,11 @@ public class LoginActivity extends Activity
 					//open editor to edit content in settings
 					SharedPreferences.Editor editor=sp.edit();
 					//editor.putInt(key, value)
-					editor.putInt("user_id", user_id);
-					editor.putInt("user_type", user_type);
+					editor.putInt("owner_id", owner_id);
+					//editor.putInt("user_type", user_type);
 					editor.putString("name",name);
+					editor.putString("surname",surname);
+					editor.putString("contact_no",contact_no);
 					editor.putString("email",email);
 					editor.commit();
 					
@@ -173,8 +178,6 @@ public class LoginActivity extends Activity
 				
 			}
 			
-			*/
-
 			Toast.makeText(LoginActivity.this, "logged in", 5).show();
 			Intent in=new Intent(LoginActivity.this,
 					AboutVehicleActivity.class);
