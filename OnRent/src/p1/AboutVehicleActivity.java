@@ -4,17 +4,26 @@ import com.aish.onrent.R;
 
 import android.app.TabActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.TabHost.TabSpec;
 
 public class AboutVehicleActivity extends TabActivity
 { /** Called when the activity is first created. */
-    @Override
+	TextView textUser,textContact;
+	
+    @SuppressWarnings("deprecation")
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about_vehicle);
-        
+        SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
+    	final int owner_id=sp.getInt("owner_id", 0);
+    	String name=sp.getString("name", "");
+    	textUser.setText("Welcome"+name);
+    		
         TabHost tabHost = getTabHost();
         
         // Tab for add
