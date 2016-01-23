@@ -1,0 +1,44 @@
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" 
+    android:background="#027cd5"
+  
+    >
+
+    <include layout="@layout/toolbar_actionbar_with_headerbar" />
+    
+        <Button
+            android:id="@+id/button2"
+          	android:textColor="#000000"
+			android:textSize="30sp" 			
+			android:layout_width="250dp" 			
+			 android:layout_height="60dp" 			
+			android:background="@drawable/buttonshape"			
+			android:shadowColor="#A8A8A8"			
+			android:shadowDx="0" 
+			android:shadowDy="0" 			
+			android:shadowRadius="13"  
+			android:layout_marginTop="150dp"       
+			android:layout_gravity="center"   
+            android:text="renter" />
+
+        <Button
+            android:id="@+id/button1"            
+            android:textColor="#000000"
+			android:textSize="30sp" 			
+			android:layout_width="250dp" 			
+			 android:layout_height="60dp" 			
+			android:background="@drawable/buttonshape"			
+			android:shadowColor="#A8A8A8"			
+			android:shadowDx="0" 
+			android:shadowDy="0" 			
+			android:shadowRadius="13"	
+			android:layout_margin="5dp"		    
+			android:layout_gravity="center"
+            android:text="owner" />
+
+   
+
+</LinearLayout>

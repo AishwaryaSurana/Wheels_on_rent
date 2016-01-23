@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" 
+    android:background="#ffffcc">
+
+    <EditText
+        android:id="@+id/editText1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="enter name"
+        android:inputType="textPersonName" >
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/editText2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="enter mobile no"
+        android:inputType="phone" />
+	<RelativeLayout android:id="@+id/RelativeLayout01" 
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content"
+    >
+    <Button
+        android:id="@+id/button1"
+       android:text="Submit" 
+				android:textColor="#FFFFFF"				
+				android:textSize="24sp" 	
+				android:layout_width="125dp" 
+				android:layout_height="44dp"				
+				android:background="@drawable/buttonsearchshape" 				
+				android:shadowColor="#A8A8A8" 				
+				android:shadowDx="0" 				
+				android:shadowDy="0" 				
+				android:shadowRadius="5" />
+	</RelativeLayout>
+</LinearLayout>

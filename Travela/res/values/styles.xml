@@ -1,0 +1,55 @@
+<resources>
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <item name="windowActionBar">false</item>
+    <item name="windowNoTitle">true</item>
+    <item name="android:tabWidgetStyle">@style/TabWidget</item> 
+    <item name="android:typeface">serif</item>
+    
+</style>
+    <style name="ButtonStyle"> 
+        <item name="android:layout_width" >300dp</item> 
+        <item name="android:layout_height" >wrap_content</item> 
+        <item name="android:layout_marginTop" >10dp</item> 
+        <item name="android:textSize" >10pt</item> 
+        <item name="android:background" >#FF0000</item> 
+	</style> 
+
+   
+    <style name="MyToolbarStyle">
+    <item name="android:maxHeight">50dp</item>
+    <item name="android:background">@color/primary</item>
+   
+    <!-- No need for colorPrimary, colorPrimaryDark, colorAccent here
+         this should go to the AppTheme -->
+</style>
+
+<style name="TextAppearance" >
+    <item name="android:textSize">18dp</item>
+    <item name="android:textStyle">normal</item>
+    <item name="android:textColor">#ffffff</item>
+</style>
+   
+    
+    <style name="TabWidget" >
+   		<item name="android:background">#006cb4</item>
+        <item name="android:ellipsize">marquee</item>
+       
+        <item name="android:singleLine">true</item>
+        <item name="android:textAppearance">@style/TextAppearance</item>
+    </style>
+
+</resources>

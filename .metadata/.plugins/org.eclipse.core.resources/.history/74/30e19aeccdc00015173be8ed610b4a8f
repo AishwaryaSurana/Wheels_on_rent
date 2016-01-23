@@ -1,0 +1,640 @@
+package p1;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.aish.onrent.R;
+import com.google.gson.Gson;
+
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+ 
+public class ViewVehicleActivity extends Activity
+{
+	int owner_id;
+	ListView listview;
+	ArrayList<Vehicle> list_vehicle=new ArrayList<Vehicle>();
+	VehicleAdapter adapter;
+	//static String imageName="";
+	
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) 
+	{
+	
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.view_vehicle_new);
+		listview=(ListView)findViewById(R.id.listView1);
+		SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
+		owner_id=sp.getInt("owner_id", 0);
+		String url=WebHelper.baseUrl+"/Vehicle_Servlet";
+		
+		ViewTask task=new ViewTask();
+		task.execute(url,owner_id+"");
+		
+    	
+	}//create adapter as inner class
+		class VehicleAdapter extends BaseAdapter
+		{
+
+			@Override
+			public int getCount() {
+				
+				return list_vehicle.size();
+			}
+
+			@Override
+			public Object getItem(int position) {
+				
+				return list_vehicle.get(position);
+			}
+
+			@Override
+			public long getItemId(int position) {
+				
+				return position;
+			}
+
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				
+				final Vehicle v = list_vehicle.get(position);
+				
+				//load the view/UI for item
+				LayoutInflater inf = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+				View itemView=inf.inflate(R.layout.t_nd_f_list_item,null);
+				ImageView img;
+				
+				//fill item with vehicle v
+				img=(ImageView)itemView.findViewById(R.id.imageView1);
+				TextView name=(TextView)itemView.findViewById(R.id.textView4);
+				TextView driver=(TextView)itemView.findViewById(R.id.textView5);
+				TextView available=(TextView)itemView.findViewById(R.id.textView6);
+				Button edit=(Button)itemView.findViewById(R.id.button1);
+				Button delete=(Button)itemView.findViewById(R.id.button2);
+				
+				String imageName=v.getImageName();
+				name.setText(v.getName());
+				driver.setText(v.getDriver());
+				String str=v.getAvailability();
+				Log.e("str=",str);
+				if(str.equals("yes"))
+				available.setText("Available");
+				else
+				available.setText("Not Available");
+				
+				final int vehicle_id=v.getVehicleId();
+				
+				SharedPreferences sp1=getSharedPreferences("settings",MODE_PRIVATE);
+				SharedPreferences.Editor editor=sp1.edit();
+				editor.putInt("vehicle_id", vehicle_id);
+				editor.commit();
+				
+				String url=WebHelper.phpUrl+"/uploads/"+imageName;
+		        ImageTask task=new ImageTask();
+		    	task.execute(url,owner_id+"",vehicle_id+"",img);
+		   
+				final Intent in=new Intent(ViewVehicleActivity.this,EditVehicle.class);
+				in.putExtra("vehicle", v);
+				
+				edit.setOnClickListener(new OnClickListener() 
+				{
+					
+					@Override
+					public void onClick(View v)
+					{
+
+						startActivity(in);
+						
+						
+					}
+				});
+				delete.setOnClickListener(new OnClickListener()
+				{
+					
+					@Override
+					public void onClick(View v) 
+					{
+						String url=WebHelper.baseUrl+"/DeleteVehicleServlet";
+						DeleteTask task=new DeleteTask();
+						task.execute(url,vehicle_id+"");
+						
+						
+					}
+				});
+				return itemView;
+			}
+			
+			
+		}
+		
+		class ImageTask extends AsyncTask<Object, Void, Bitmap>
+	    {
+			ImageView img;
+
+			@Override
+			protected Bitmap doInBackground(Object... params)
+			{
+				String url=params[0].toString();
+				HttpGet getReq=new HttpGet(url);
+				Log.e("Url is",url);
+				HttpClient client=new DefaultHttpClient();
+				Bitmap bm=null;
+				img=(ImageView)params[3];
+				
+				try
+				{
+					HttpResponse resp=client.execute(getReq);
+					InputStream is=resp.getEntity().getContent();
+					bm=BitmapFactory.decodeStream(is);
+					
+				}
+				catch(Exception ex)
+				{
+					Log.e("Exception 1",ex+"");
+				}
+				Log.e("bitmap",bm+"");
+				return bm;
+			}
+			
+			@Override
+			protected void onPostExecute(Bitmap result) 
+			{
+				super.onPostExecute(result);
+				if(result==null)
+				{
+					img.setImageResource(R.drawable.ic_launcher);
+				}
+				else
+				{
+					img.setImageBitmap(result);
+				}
+			}
+		}
+
+		class DeleteTask extends AsyncTask<String, Void, String>
+		{
+
+			@Override
+			protected String doInBackground(String... params) 
+			{
+				HttpPost postReq=new HttpPost(params[0]);
+				BasicNameValuePair pair1=new BasicNameValuePair("vehicle_id", params[1]);			
+				ArrayList<BasicNameValuePair> listPairs=new ArrayList<BasicNameValuePair>();
+				Log.e("id",params[1]+"");
+				listPairs.add(pair1);
+				String result="";
+				try
+				{
+					UrlEncodedFormEntity entity=new UrlEncodedFormEntity(listPairs);
+					postReq.setEntity(entity);			
+					//send request to server
+					
+					HttpClient client=new DefaultHttpClient();
+					HttpResponse resp=client.execute(postReq);
+					
+					InputStream is=resp.getEntity().getContent();
+					InputStreamReader reader=new InputStreamReader(is);
+					BufferedReader br=new BufferedReader(reader);
+					
+					
+					while(true)
+					{
+						
+						
+						String s=br.readLine();
+						if(s==null) 
+							break;
+						result=result+s;
+					}
+					br.close();
+					
+					
+				}
+				catch(Exception ex) 
+				{
+					Log.e("Exception",ex+"");
+					
+				}
+				
+				return result;
+			}
+			// eof doInBack
+			@Override
+			protected void onPostExecute(String result) 
+			{
+				super.onPostExecute(result);
+				
+				Log.e("result",result);
+				//if fail or error
+				if(result.equals("1"))
+				{
+					Toast.makeText(ViewVehicleActivity.this,
+						"Deleted Successfully ", Toast.LENGTH_LONG).show();
+					Intent in=new Intent(ViewVehicleActivity.this,
+							ViewVehicleActivity.class);
+					startActivity(in);
+			
+				}
+				else
+				{
+					Toast.makeText(ViewVehicleActivity.this,
+						"Deletion failed. try again !!", Toast.LENGTH_LONG).show();
+				}
+			
+			}
+		}
+
+		class ViewTask extends AsyncTask<String, Void, String>
+		{
+			private ProgressDialog dialog = 
+					   new ProgressDialog(ViewVehicleActivity.this);
+
+			 protected void onPreExecute()
+			 {
+				   dialog.setMessage("Getting your data... Please wait...");
+				   dialog.show();
+			 }
+
+		
+			@Override
+			protected String doInBackground(String... params)
+			{
+			
+				HttpPost postReq=new HttpPost(params[0]);
+				BasicNameValuePair pair1=
+						new BasicNameValuePair("owner_id", params[1]);			
+				ArrayList<BasicNameValuePair> listPairs=
+						new ArrayList<BasicNameValuePair>();
+				Log.e("id",params[1]+"");
+				listPairs.add(pair1);
+				String result="";
+				try
+				{
+					UrlEncodedFormEntity entity=new UrlEncodedFormEntity(listPairs);
+					postReq.setEntity(entity);			
+					
+					//send request to server
+					
+					HttpClient client=new DefaultHttpClient();
+					HttpResponse resp=client.execute(postReq);
+					
+					InputStream is=resp.getEntity().getContent();
+					InputStreamReader reader=new InputStreamReader(is);
+					BufferedReader br=new BufferedReader(reader);
+										
+					while(true)
+					{
+						
+						
+						String s=br.readLine();
+						if(s==null) 
+							break;
+						result=result+s;
+					}
+					br.close();
+					
+					
+				}
+				catch(Exception ex) 
+				{
+					Log.e("Exception",ex+"");
+					
+				}
+				
+				return result;
+			}
+			// eof doInBack
+			@Override
+			protected void onPostExecute(String result) 
+			{
+				super.onPostExecute(result);
+				dialog.dismiss();
+				
+				Log.e("result",result);
+				//if fail or error
+				if(result.startsWith("fail") ||
+						result.startsWith("error") )
+				{
+					Toast.makeText(ViewVehicleActivity.this, result, 5).show();
+				}
+				else
+				{
+					//parse json object from result
+					try
+					{
+						JSONArray array= new JSONArray(result);
+						for(int i=0;i<array.length();i++)
+						{
+							JSONObject obj  = array.getJSONObject(i);
+							String strjson=obj.toString();
+							Gson g = new Gson();
+							Vehicle v= g.fromJson(strjson, Vehicle.class);
+							list_vehicle.add(v);
+						}
+						Intent in=new Intent(ViewVehicleActivity.this,EditVehicle.class);
+						adapter = new  VehicleAdapter();
+						listview.setAdapter(adapter);
+						
+						
+					}
+					catch(Exception e)
+					{
+						Log.e("error3",e.getMessage());
+					}
+				}
+				
+			}
+					
+	
+
+			protected void onCancelled()
+			{
+				   dialog.dismiss();
+				   Toast toast = Toast.makeText(ViewVehicleActivity.this, 
+				     "Error connecting to Server", Toast.LENGTH_LONG);
+				   toast.setGravity(Gravity.TOP, 25, 400);
+				   toast.show();
+
+			}
+		}
+	
+	}
+	
+//	try
+//	{
+//		JSONObject obj=new JSONObject(result);
+//		int wheeler=obj.getInt("wheeler");
+//		String type=obj.getString("type");
+//		int seater=obj.getInt("seater");
+//		double rent_per_km,rent_daily;
+//		rent_per_km=obj.getDouble("rent_per_km");
+//		rent_daily=obj.getDouble("rent_daily");
+//		String state=obj.getString("state");
+//		String city=obj.getString("city");
+//		int owner_id=obj.getInt("owner_id");
+//		int vehicle_id=obj.getInt("vehicle_id");
+//		String name=obj.getString("name");
+//		String regNo=obj.getString("registration_no");
+//		String driver=obj.getString("driver");
+//		String available=obj.getString("available");
+//		String location=obj.getString("location");
+//			
+//		//SharedPreference
+//		SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
+//		
+//		//open editor to edit content in settings
+//		SharedPreferences.Editor editor=sp.edit();
+//		//editor.putInt(key, value)
+//		editor.putInt("owner_id", owner_id);
+//		//editor.putInt("user_type", user_type);
+//		editor.putString("name",name);
+//		editor.putString("surname",surname);
+//		editor.putString("contact_no",contact_no);
+//		editor.putString("email",email);
+//		editor.commit();
+		
+
+//	}
+//	catch(Exception ex)
+//	{
+//		Log.e("Error:",ex+"");
+//		
+//	}
+//	
+
+	
+	//
+//import java.io.File;
+//import java.io.FileOutputStream;
+//import java.io.IOException;
+//import java.io.InputStream;
+//import java.net.HttpURLConnection;
+//import java.net.MalformedURLException;
+//import java.net.URL;
+//
+//import com.aish.onrent.R;
+//
+//import android.app.Activity;
+//import android.app.Dialog;
+//import android.os.Bundle;
+//import android.os.Environment;
+//import android.util.Log;
+//import android.view.View;
+//import android.view.Window;
+//import android.view.View.OnClickListener;
+//import android.widget.Button;
+//import android.widget.ProgressBar;
+//import android.widget.TextView;
+//import android.widget.Toast;
+//
+//public class ViewVehicleActivity extends Activity {
+//
+//	//ProgressBar pb;
+//	//Dialog dialog;
+//	int downloadedSize = 0;
+//	int totalSize = 0;
+//	//TextView cur_val;
+//	String dwnload_file_path = "http://coderzheaven.com/sample_folder/sample_file.png";
+//	Button b;
+//	@Override
+//	public void onCreate(Bundle savedInstanceState) {
+//		super.onCreate(savedInstanceState);
+//		setContentView(R.layout.view_vehicle);
+//
+//		b = (Button) findViewById(R.id.button1);
+//		b.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				//showProgress(dwnload_file_path);
+//
+//				new Thread(new Runnable() {
+//					public void run() {
+//						downloadFile();
+//					}
+//				}).start();
+//			}
+//		});
+//	}
+//
+//	void downloadFile() {
+//
+//		try {
+//			URL url = new URL(dwnload_file_path);
+//			HttpURLConnection urlConnection = (HttpURLConnection) url
+//					.openConnection();
+//
+//			urlConnection.setRequestMethod("GET");
+//			urlConnection.setDoOutput(true);
+//
+//			// connect
+//			urlConnection.connect();
+//
+//			// set the path where we want to save the file
+//			File SDCardRoot = Environment.getExternalStorageDirectory();
+//			// create a new file, to save the downloaded file
+//			File file = new File(SDCardRoot, "downloaded_file.png");
+//
+//			FileOutputStream fileOutput = new FileOutputStream(file);
+//
+//			// Stream used for reading the data from the internet
+//			InputStream inputStream = urlConnection.getInputStream();
+//
+//			// this is the total size of the file which we are downloading
+//			totalSize = urlConnection.getContentLength();
+//
+//			runOnUiThread(new Runnable() {
+//				public void run() {
+//					//pb.setMax(totalSize);
+//				}
+//			});
+//
+//			// create a buffer...
+//			byte[] buffer = new byte[1024];
+//			int bufferLength = 0;
+//
+//			while ((bufferLength = inputStream.read(buffer)) > 0) {
+//				fileOutput.write(buffer, 0, bufferLength);
+//				downloadedSize += bufferLength;
+//				// update the progressbar //
+//				runOnUiThread(new Runnable() {
+//					public void run() {
+//						//pb.setProgress(downloadedSize);
+//						float per = ((float) downloadedSize / totalSize) * 100;
+//						Log.e("Downloaded " ,""+ downloadedSize
+//								+ "KB / " + totalSize + "KB (" + (int) per
+//								+ "%)");
+//					}
+//				});
+//			}
+//			// close the output stream when complete //
+//			fileOutput.close();
+//			runOnUiThread(new Runnable() {
+//				public void run() {
+//					// pb.dismiss(); // if you want close it..
+//				}
+//			});
+//
+//		} catch (final MalformedURLException e) {
+//			showError("Error : MalformedURLException " + e);
+//			e.printStackTrace();
+//		} catch (final IOException e) {
+//			showError("Error : IOException " + e);
+//			e.printStackTrace();
+//		} catch (final Exception e) {
+//			showError("Error : Please check your internet connection " + e);
+//		}
+//	}
+//
+//	void showError(final String err) {
+//		runOnUiThread(new Runnable() {
+//			public void run() {
+//				Toast.makeText(ViewVehicleActivity.this, err, Toast.LENGTH_LONG)
+//						.show();
+//			}
+//		});
+//	}
+////
+////	void showProgress(String file_path) 
+////	{
+////		
+////		dialog = new Dialog(ViewVehicleActivity.this);
+////		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+////		dialog.setContentView(R.layout.myprogressdialog);
+////		dialog.setTitle("Download Progress");
+////
+////		TextView text = (TextView) dialog.findViewById(R.id.tv1);
+////		text.setText("Downloading file from ... " + file_path);
+////		cur_val = (TextView) dialog.findViewById(R.id.cur_pg_tv);
+////		cur_val.setText("Starting download...");
+////		dialog.show();
+////
+////		pb = (ProgressBar) dialog.findViewById(R.id.progress_bar);
+////		pb.setProgress(0);
+////		pb.setProgressDrawable(getResources().getDrawable(
+////				R.drawable.green_progress));
+//	//}
+//}
+//
+//// package p1;
+////
+//// import com.aish.onrent.R;
+////
+//// import android.app.Activity;
+//// import android.graphics.Bitmap;
+//// import android.graphics.BitmapFactory;
+//// import android.os.Bundle;
+//// import android.widget.ImageView;
+////
+//// public class ViewVehicleActivity extends Activity
+//// {
+//// ImageView iv;
+//// Bitmap bm;
+//// @Override
+//// protected void onCreate(Bundle savedInstanceState)
+//// {
+//// super.onCreate(savedInstanceState);
+//// setContentView(R.layout.view_vehicle);
+//// iv=(ImageView)findViewById(R.id.imageView1);
+//// byte[] decodedString = Base64.decode(encodedImage, Base64.DECODE);
+//// Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0,
+//// decodedString.length);
+////
+////
+//// Object json = jsonParser.makeHttpRequest(url_img_address, "GET", params);
+////
+//// Log.d("Image: ", json.toString());
+////
+//// try {
+//// int success = json.getInt(TAG_SUCCESS);
+////
+//// if (success == 1) {
+//// address = json.getJSONArray(TAG_IMAGE_TABLE);
+//// for (int i = 0; i < address.length(); i++) {
+//// JSONObject c = address.getJSONObject(i);
+//// image = c.getString(TAG_IMAGE);
+//// byte[] dwimage = Base64.decode(image.getBytes());
+//// System.out.println(dwimage);
+//// bmp = BitmapFactory.decodeByteArray(dwimage, 0, dwimage.length);
+//// }
+//// } else {
+////
+//// }
+//// } catch (JSONException | IOException e) {
+//// e.printStackTrace();
+//// }
+////
+//// iv.setImageBitmap(bm);
+//// }
+////
+//// }
