@@ -252,8 +252,15 @@
    
    <Button
         android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"				
+				android:textSize="24sp" 	
+				android:layout_width="125dp" 
+				android:layout_height="44dp"				
+				android:background="@drawable/buttonsearchshape" 				
+				android:shadowColor="#A8A8A8" 				
+				android:shadowDx="0" 				
+				android:shadowDy="0" 				
+				android:shadowRadius="5"
         android:text="Update"
       
         />

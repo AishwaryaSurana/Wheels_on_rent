@@ -30,7 +30,7 @@
             android:layout_width="110dp"
             android:layout_height="wrap_content"
             android:text="Model:"
-       		android:textColor="#ffffff"
+       		android:textColor="#000000"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 		<TextView
             android:id="@+id/textView4"
@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:text="Medium Text"
             android:textAppearance="?android:attr/textAppearanceSmall" 
-            android:textColor="#ffffff"/>
+            android:textColor="#000000"/>
 		</LinearLayout>
 		
          <LinearLayout
@@ -51,6 +51,7 @@
             android:layout_width="110dp"
             android:layout_height="wrap_content"
             android:text="Rent_per_km:"
+            android:textColor="#000000"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 		
         	  <TextView
@@ -58,6 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Medium Text"
+            android:textColor="#000000"
             android:textAppearance="?android:attr/textAppearanceSmall" />
         	  
 		</LinearLayout>
@@ -72,6 +74,7 @@
             android:layout_width="110dp"
             android:layout_height="wrap_content"
             android:text="Avaibility:"
+            android:textColor="#000000"
             android:textAppearance="?android:attr/textAppearanceSmall" />
    
         <TextView
@@ -79,6 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Medium Text"
+            android:textColor="#000000"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 		</LinearLayout>
 		

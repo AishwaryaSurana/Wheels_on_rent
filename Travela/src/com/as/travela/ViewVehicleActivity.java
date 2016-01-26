@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -14,6 +16,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+
+
+
+
+
+
 
 
 import com.google.gson.Gson;
@@ -41,7 +50,7 @@ import android.widget.Toast;
  
 public class ViewVehicleActivity extends Activity
 {
-	int owner_id;
+	int owner_id,vehicle_id;
 	ListView listview;
 	ArrayList<Vehicle> list_vehicle=new ArrayList<Vehicle>();
 	VehicleAdapter adapter;
@@ -103,16 +112,14 @@ public class ViewVehicleActivity extends Activity
 				TextView available=(TextView)itemView.findViewById(R.id.textView6);
 				Button edit=(Button)itemView.findViewById(R.id.button1);
 				Button delete=(Button)itemView.findViewById(R.id.button2);
-				
+		
 				String imageName=v.getImageName();
 				driver.setText(v.getDriver());
-				String n= Character.toUpperCase((v.getName()).charAt(0)) + (v.getName()).substring(1);
-				Log.e("name=",n);
-				name.setText(n);
+				name.setText(v.getName());
 				
 				available.setText(v.getAvailability());
 				
-				final int vehicle_id=v.getVehicleId();
+				vehicle_id=v.getVehicleId();
 				
 				SharedPreferences sp1=getSharedPreferences("settings",MODE_PRIVATE);
 				SharedPreferences.Editor editor=sp1.edit();
@@ -148,6 +155,7 @@ public class ViewVehicleActivity extends Activity
 						DeleteTask task=new DeleteTask();
 						task.execute(url,vehicle_id+"");
 						
+			
 						
 					}
 				});
@@ -155,6 +163,65 @@ public class ViewVehicleActivity extends Activity
 			}
 			
 			
+		}
+		
+		class DeletePhotoTask extends AsyncTask<String,Void,String>
+		{
+
+			@SuppressWarnings("deprecation")
+			@Override
+			protected String doInBackground(String... params) 
+			{
+				String url=params[0];
+				int vehicle_id=Integer.valueOf(params[1]);
+				int owner_id=Integer.valueOf(params[2]);
+				
+				InputStream is;
+			    
+				ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+				String o=owner_id+"";
+				String v=vehicle_id+"";
+				String imgName=o+v+".jpg";
+				
+				nameValuePairs.add(new BasicNameValuePair("cmd",imgName));
+				Log.v("image del name", imgName);
+				
+				try
+				{
+				        HttpClient httpclient = new DefaultHttpClient();
+				        HttpPost httppost = new HttpPost(url);
+				        Log.e("path=",url);
+				        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+				        HttpResponse response = httpclient.execute(httppost);
+				        Log.e("response del",response+"");
+				        HttpEntity entity = response.getEntity();
+				        is = entity.getContent();
+				        Log.e("is=" ,is+"");
+				 }
+				catch(Exception e)
+				{
+				   Log.v("log_tag", "Error in http connection "+e.toString());
+				}
+				return "Success";
+			}
+			
+			@Override
+			protected void onPostExecute(String result) 
+			{
+				super.onPostExecute(result);
+				try 
+				{
+					
+					Toast.makeText(ViewVehicleActivity.this, "Photo Deleted", Toast.LENGTH_LONG).show();
+				}
+				catch (Exception e)
+				{
+					Toast.makeText(getApplicationContext(),
+							e.getMessage(),Toast.LENGTH_LONG).show();
+					Log.e(e.getClass().getName(), e.getMessage(), e);
+				}
+			
+			}
 		}
 		
 		class ImageTask extends AsyncTask<Object, Void, Bitmap>
@@ -203,13 +270,14 @@ public class ViewVehicleActivity extends Activity
 
 		class DeleteTask extends AsyncTask<String, Void, String>
 		{
-
+			
 			@Override
 			protected String doInBackground(String... params) 
 			{
 				HttpPost postReq=new HttpPost(params[0]);
 				BasicNameValuePair pair1=new BasicNameValuePair("vehicle_id", params[1]);			
 				ArrayList<BasicNameValuePair> listPairs=new ArrayList<BasicNameValuePair>();
+				vehicle_id=Integer.valueOf(params[1]);
 				Log.e("id",params[1]+"");
 				listPairs.add(pair1);
 				String result="";
@@ -248,6 +316,12 @@ public class ViewVehicleActivity extends Activity
 				
 				return result;
 			}
+			
+			@Override
+			protected void onProgressUpdate(Void... values) 
+			{
+			
+			}
 			// eof doInBack
 			@Override
 			protected void onPostExecute(String result) 
@@ -256,8 +330,12 @@ public class ViewVehicleActivity extends Activity
 				
 				Log.e("result",result);
 				//if fail or error
-				if(result.equals("1"))
+				if(result.equals("2"))
 				{
+					String url2=WebHelper.phpUrl+"/delete_photo.php";
+					DeletePhotoTask dltTask=new DeletePhotoTask();
+					dltTask.execute(url2,vehicle_id+"",owner_id+"");
+					
 					Toast.makeText(ViewVehicleActivity.this,
 						"Deleted Successfully ", Toast.LENGTH_LONG).show();
 					Intent in=new Intent(ViewVehicleActivity.this,

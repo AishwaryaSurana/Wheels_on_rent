@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 
 
+
 import com.google.gson.Gson;
 
 import android.app.Activity;
@@ -247,7 +248,7 @@ public class EditVehicle extends Activity
 			public void onNothingSelected(AdapterView<?> parent) 
 			{
 				//flag=0;
-				Toast.makeText(EditVehicle.this,"Select wheeler", 5).show();
+				Toast.makeText(EditVehicle.this,"Select wheeler", Toast.LENGTH_SHORT).show();
 				
 			}
 		});
@@ -268,9 +269,10 @@ public class EditVehicle extends Activity
 			@Override
 			public void onClick(View v) 
 			{
-				String regNo,vehicleName,rent1,rent2,availability,wheeler1,seater1,location,type,driver = null,state,city;
+				String regNo,vehicleName,rent1,rent2,availability,wheeler1,seater1;
+				String location,type,driver="",state,city;
 				int wheeler,seater;
-				Double rent_per_km, rent_daily;
+				double rent_per_km, rent_daily;
 				boolean flag=false;
 				vehicleName=ed1.getText().toString();
 				regNo=ed2.getText().toString();
@@ -308,17 +310,35 @@ public class EditVehicle extends Activity
 				{
 				availability="Not Available";	
 				}
-				state=(String)stateSpinner.getSelectedItem();
+				String st,ct;
+				st=(String)stateSpinner.getSelectedItem();
+				if(st.equals("Select State"))
+				{
+					state="";
+				}
+				else
+				{
+					state=st;
+					
+				}
 				City c1=new City();
 				
 				c1=(City)citySpinner.getSelectedItem();
 				
-				city=c1.toString();
+				ct=c1.toString();
+				if(ct.equals("Select City")||ct.equals(""))
+				{
+					city="";
+				}
+				else
+				{
+					city=ct;
+				}
 				SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
-		    	String contact=sp.getString("contact_no", "");
 		    	int id=sp.getInt("owner_id", 0);
-		    	if((regNo!=null&&vehicleName!=null&&driver!=null)&&!(regNo.equals("")&&vehicleName.equals("")&&
-	                	driver.equals("")))
+		    	
+		    	if(!(regNo.equals("")||vehicleName.equals("")||driver.equals("")||
+		    			state.equals("")||city.equals("")))
 	                	{
 	                		flag=true;
 	                	}
@@ -336,7 +356,7 @@ public class EditVehicle extends Activity
 	             	}
 	             else
 	             {
-	            	 Toast.makeText(EditVehicle.this,"Enter all required fields", 5).show();
+	            	 Toast.makeText(EditVehicle.this,"Enter all required fields", Toast.LENGTH_LONG).show();
 		             
 	             }
 				
@@ -375,7 +395,7 @@ public class EditVehicle extends Activity
 				int statePosition=position;
 				if(statePosition==0)
 				{
-					Toast.makeText(EditVehicle.this,"Select State",5).show();
+					
 				}
 				else
 				{
@@ -484,7 +504,7 @@ class City_Task extends AsyncTask<String, String, String>
 					int cityPosition=position;
 					if(cityPosition==0)
 					{
-						Toast.makeText(EditVehicle.this, "Please select city",5).show();
+					
 					}
 					else
 					{

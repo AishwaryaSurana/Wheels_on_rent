@@ -231,7 +231,14 @@ public class TWActivity extends Activity
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
 						location=edit_loc.getText().toString();
+						if(state.equals("Select State")&&City.equals("Select City"))
+						{
+							Toast.makeText(getApplicationContext(), "Please select state and city",5).show();
+						}
+						else
+						{
 						dlg_tw.show();
+						}
 							
 				       
 					}
@@ -286,6 +293,7 @@ public class TWActivity extends Activity
 				String imageName=v1.getImageName();
 				double d=v1.getRent_per_km();
 				String srte=String.valueOf(d);
+
 				Log.e("Rent",srte);
 				model_name.setText(v1.getName());
 				seater.setText(srte);

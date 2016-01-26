@@ -14,12 +14,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
-
-
-
-
-import com.as.travela.ViewVehicleActivity.ImageTask;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -28,10 +22,13 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,7 +37,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class EditVehiclePhotoActivity extends Activity
+public class EditVehiclePhotoActivity extends ActionBarActivity
 {
 	ImageButton camera,gallery;
 	private static final int PICK_IMAGE = 1;
@@ -57,6 +54,16 @@ public class EditVehiclePhotoActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.photo);
+		
+		Toolbar   t= new Toolbar(EditVehiclePhotoActivity.this);
+		t.setNavigationIcon(R.drawable.ic_launcher);
+		
+		Toolbar toolbar= (Toolbar)findViewById(R.id.toolbar1);
+		setSupportActionBar(toolbar);
+		toolbar.setNavigationIcon(R.drawable.ic_launcher);
+		toolbar.setTitle("Wheels on rent");
+		toolbar.setTitleTextColor(Color.WHITE);
+		
 		camera=(ImageButton)findViewById(R.id.imageButton1);
 		gallery=(ImageButton)findViewById(R.id.imageButton2);
 		imgView = (ImageView) findViewById(R.id.imageView1);

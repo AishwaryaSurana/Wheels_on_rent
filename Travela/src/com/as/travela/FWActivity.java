@@ -223,7 +223,14 @@ public class FWActivity extends Activity
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
 						location=edit_loc.getText().toString();
+						if(state.equals("Select State")&&City.equals("Select City"))
+						{
+							Toast.makeText(getApplicationContext(), "Please select state and city",5).show();
+						}
+						else
+						{
 						dlg_fw.show();
+						}
 						
 				        
 				       
@@ -440,18 +447,22 @@ public class FWActivity extends Activity
 			//layout.getBackground().setAlpha(120);
 
 			String imageName=v1.getImageName();
+			double d=v1.getRent_per_km();
+			String srte=String.valueOf(d);
+
+			Log.e("Rent",srte);
 			model_name.setText(v1.getName());
-			seater.setText(String.valueOf(v1.getSeater()));
+			seater.setText(srte);
 			available.setText(v1.getAvailability());
-			int vehicle_id=v1.getVehicleId();
 			if(v1.getAvailability().equals("Available"))
-			{
-				button1.setEnabled(false);
-			}
-			if(v1.getAvailability().equals("Not Available"))
 			{
 				button1.setEnabled(true);
 			}
+			if(v1.getAvailability().equals("Not Available"))
+			{
+				button1.setEnabled(false);
+			}
+
 			button1.setOnClickListener(new OnClickListener() {
 				
 				@Override
@@ -464,6 +475,8 @@ public class FWActivity extends Activity
 					startActivity(in);
 				}
 			});
+			int vehicle_id=v1.getVehicleId();
+			
 			String url=WebHelper.phpUrl+"/uploads/"+imageName;
 	        ImageTask imgtask=new ImageTask();
 	    	imgtask.execute(url,vehicle_id+"",image);

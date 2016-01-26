@@ -20,8 +20,11 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,7 +33,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 
-public class LoginActivity extends Activity
+public class LoginActivity extends ActionBarActivity
 {
 	EditText etContact,etPasword;
 	Button btnLogin,btnRegister;
@@ -45,6 +48,16 @@ public class LoginActivity extends Activity
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
+		
+		Toolbar   t= new Toolbar(LoginActivity.this);
+		t.setNavigationIcon(R.drawable.ic_launcher);
+		
+		Toolbar toolbar= (Toolbar)findViewById(R.id.toolbar1);
+		setSupportActionBar(toolbar);
+		toolbar.setNavigationIcon(R.drawable.ic_launcher);
+		toolbar.setTitle("Wheels on rent");
+		toolbar.setTitleTextColor(Color.WHITE);
+		
 		etContact=(EditText)findViewById(R.id.editText1);
 		etPasword=(EditText)findViewById(R.id.editText2);
 		btnLogin=(Button)findViewById(R.id.button1);

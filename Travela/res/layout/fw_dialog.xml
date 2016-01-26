@@ -57,7 +57,10 @@
         android:text="Other" />
     </RadioGroup>
     
-        
+        <LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center" >
 
     <Button
         android:id="@+id/button1"
@@ -71,5 +74,6 @@
 				android:shadowDx="0" 				
 				android:shadowDy="0" 				
 				android:shadowRadius="5"/>
+    </LinearLayout>
 
 </LinearLayout>

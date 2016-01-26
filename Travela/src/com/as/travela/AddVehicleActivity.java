@@ -275,7 +275,7 @@ public class AddVehicleActivity extends Activity
 			public void onNothingSelected(AdapterView<?> parent) 
 			{
 				//flag=0;
-				Toast.makeText(AddVehicleActivity.this,"Select wheeler", 5).show();
+				Toast.makeText(AddVehicleActivity.this,"Select wheeler", Toast.LENGTH_LONG).show();
 				
 			}
 		});
@@ -304,11 +304,15 @@ public class AddVehicleActivity extends Activity
 			@Override
 			public void onClick(View v) 
 			{
-				String regNo,vehicleName,rent1,rent2,availability,wheeler1,seater1,location,type,driver = null,state,city;
+				try
+				{
+				String regNo,vehicleName,rent1,rent2,availability,wheeler1;
+				String seater1,location,type,driver="",state,city;
 				int wheeler,seater;
 				double rent_per_km=0, rent_daily=0;
 				boolean flag=false;
 				vehicleName=ed1.getText().toString();
+				Log.e("name v",vehicleName);
 				regNo=ed2.getText().toString();
 				location=ed5.getText().toString();
 				rent1=ed3.getText().toString();
@@ -355,24 +359,44 @@ public class AddVehicleActivity extends Activity
 				editor.putBoolean("with",chkd1);
 				editor.putBoolean("withOut",chkd2);
 				editor.commit();
+				String st,ct;
 				
-				state=(String)stateSpinner.getSelectedItem();
+				st=(String)stateSpinner.getSelectedItem();
+				if(st.equals("Select State"))
+				{
+					Toast.makeText(AddVehicleActivity.this, "Please Select State",Toast.LENGTH_SHORT).show();
+					state="";
+				}
+				else
+				{
+					state=st;
+					
+				}
 				City c1=new City();
-				
+				Log.e("city",c1+"");
 				c1=(City)citySpinner.getSelectedItem();
+				ct=c1.toString();
 				
-				city=c1.toString();
+				if(ct.equals("Select City")||ct.equals(""))
+				{
+					Toast.makeText(AddVehicleActivity.this, "Please Select City",Toast.LENGTH_SHORT).show();
+					city="";
+				}
+				else
+				{
+					city=ct;
+				}
+				
 				SharedPreferences sp1=getSharedPreferences("settings",MODE_PRIVATE);
-		    	String contact=sp1.getString("contact_no", "");
 		    	int id=sp1.getInt("owner_id", 0);
 		    	//regNo,vehicleName,rent1,rent2,availability,wheeler1,seater1,location,type,driver = null,state,city;
 				//int wheeler,seater;
 				//double rent_per_km=0, rent_daily=0;
-		    	if((regNo!=null&&vehicleName!=null&&driver!=null)&&!(regNo.equals("")&&vehicleName.equals("")&&
-	                	driver.equals("")))
+		    	if(!(regNo.equals("")||vehicleName.equals("")||driver.equals("")||state.equals("")||city.equals("")))
 	                	{
 	                	flag=true;
 	                	}
+		    	Log.e("flag",flag+"");
 	             if(flag==true)   
 	             	{
 	            	 Vehicle vehicle= new Vehicle(wheeler, seater, id,0, type, state, city, vehicleName
@@ -389,9 +413,15 @@ public class AddVehicleActivity extends Activity
 	             {
 	            	 Toast.makeText(AddVehicleActivity.this,"Enter all required fields", 5).show();
 	             }
-			}
+			
+			}catch(NullPointerException nl)
+				{
+				Log.e("Error is there",nl+"");
+				Toast.makeText(AddVehicleActivity.this, "Enter Required fields", Toast.LENGTH_SHORT).show();
+				}
+				}
 		});
-
+		
 		
 		String state[]=new String[]{"Select State","Andaman and Nicobar","Andhra Pradesh",	"Arunachal Pradesh",
 				"Assam","Bihar","Chandigarh","Chhattisgarh","Dadra and Nagar Haveli",
@@ -422,7 +452,7 @@ public class AddVehicleActivity extends Activity
 				int statePosition=position;
 				if(statePosition==0)
 				{
-					Toast.makeText(AddVehicleActivity.this, "Please select State",5).show();
+				
 				}
 				else
 				{
@@ -528,7 +558,6 @@ class City_Task extends AsyncTask<String, String, String>
 					int cityPosition=position;
 					if(cityPosition==0)
 					{
-						Toast.makeText(AddVehicleActivity.this, "Please Select city",5).show();
 					}
 					else
 					{

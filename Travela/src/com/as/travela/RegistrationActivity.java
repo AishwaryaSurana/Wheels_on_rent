@@ -17,8 +17,11 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -28,13 +31,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.google.gson.Gson;
 
 /**
  * Created by Aishwarya on 23-Dec-15.
  */
-public class RegistrationActivity extends Activity 
+public class RegistrationActivity extends ActionBarActivity 
 {
     EditText ed1, ed2, ed3, ed4,ed5,ed6;
     Button b;
@@ -43,6 +45,16 @@ public class RegistrationActivity extends Activity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.registration);
+        
+        Toolbar   t= new Toolbar(RegistrationActivity.this);
+		t.setNavigationIcon(R.drawable.ic_launcher);
+		
+		Toolbar toolbar= (Toolbar)findViewById(R.id.toolbar1);
+		setSupportActionBar(toolbar);
+		toolbar.setNavigationIcon(R.drawable.ic_launcher);
+		toolbar.setTitle("Wheels on rent");
+		toolbar.setTitleTextColor(Color.WHITE);
+        
         ed1 = (EditText) findViewById(R.id.editText1);
         ed2 = (EditText) findViewById(R.id.editText2);
         ed3 = (EditText) findViewById(R.id.editText3);

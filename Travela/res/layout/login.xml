@@ -5,7 +5,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="p1.LoginActivity"
-    android:gravity="center" >
+    >
+    <include layout="@layout/toolbar_actionbar_with_headerbar" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center" >
 
     <EditText
         android:id="@+id/editText1"
@@ -27,8 +33,15 @@
 
     <Button
         android:id="@+id/button1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+         android:textColor="#FFFFFF"				
+				android:textSize="24sp" 	
+				android:layout_width="125dp" 
+				android:layout_height="44dp"				
+				android:background="@drawable/buttonsearchshape" 				
+				android:shadowColor="#A8A8A8" 				
+				android:shadowDx="0" 				
+				android:shadowDy="0" 				
+				android:shadowRadius="5" 
         android:text="Login" />
 
     <Button
@@ -39,7 +52,8 @@
         android:background="#FFFFFF"
         android:textColor="#0000FF" 
         android:requiresFadingEdge="horizontal"
+        android:layout_marginTop="20dp"
         />
 
-
+</LinearLayout>
 </LinearLayout>

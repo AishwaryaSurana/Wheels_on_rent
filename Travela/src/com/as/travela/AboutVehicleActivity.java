@@ -2,6 +2,7 @@ package com.as.travela;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
@@ -61,6 +62,13 @@ public class AboutVehicleActivity extends TabActivity
         // Adding all TabSpec to TabHost
         tabHost.addTab(addspec); // Adding add vehicle tab
         tabHost.addTab(viewspec); // Adding view vehicle tab
+        
+        
+        for(int i=0;i<tabHost.getTabWidget().getChildCount();i++) 
+        { 
+            TextView tv = (TextView) tabHost.getTabWidget().getChildAt(i).findViewById(android.R.id.title); //Unselected Tabs
+            tv.setTextColor(Color.parseColor("#ffffff"));
+        } 
      }
 
 	

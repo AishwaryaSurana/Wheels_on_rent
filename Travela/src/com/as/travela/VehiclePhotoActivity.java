@@ -15,6 +15,9 @@ import org.apache.http.message.BasicNameValuePair;
 
 
 
+
+
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -23,10 +26,13 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,7 +41,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class VehiclePhotoActivity extends Activity
+public class VehiclePhotoActivity extends ActionBarActivity
 {
 	ImageButton camera,gallery;
 	private static final int PICK_IMAGE = 1;
@@ -52,9 +58,19 @@ public class VehiclePhotoActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.photo);
+		Toolbar   t= new Toolbar(VehiclePhotoActivity.this);
+		t.setNavigationIcon(R.drawable.ic_launcher);
+		
+		Toolbar toolbar= (Toolbar)findViewById(R.id.toolbar1);
+		setSupportActionBar(toolbar);
+		toolbar.setNavigationIcon(R.drawable.ic_launcher);
+		toolbar.setTitle("Wheels on rent");
+		toolbar.setTitleTextColor(Color.WHITE);
+		
 		camera=(ImageButton)findViewById(R.id.imageButton1);
 		gallery=(ImageButton)findViewById(R.id.imageButton2);
 		imgView = (ImageView) findViewById(R.id.imageView1);
+		imgView.setImageAlpha(50);
 		upload = (Button) findViewById(R.id.button1);
 		cancel = (Button) findViewById(R.id.button2);
 		upload.setOnClickListener(new View.OnClickListener() {
@@ -214,8 +230,7 @@ public class VehiclePhotoActivity extends Activity
 	}
 	class VehiclePhotoTask extends AsyncTask<Void, Void, String> 
 		{
-				@SuppressWarnings("unused")
-				@Override
+			@Override
 				protected String doInBackground(Void... unsued) 
 				{
 						InputStream is;
@@ -350,7 +365,7 @@ public class VehiclePhotoActivity extends Activity
 				BitmapFactory.Options o2 = new BitmapFactory.Options();
 				o2.inSampleSize = scale;
 				bitmap = BitmapFactory.decodeFile(filePath, o2);
-
+				imgView.setImageAlpha(255);
 				imgView.setImageBitmap(bitmap);
 
 			}
