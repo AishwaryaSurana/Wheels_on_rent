@@ -2032,12 +2032,12 @@ containing a value of this type.
         public static final int action_bar_title=0x7f090021;
         public static final int action_context_bar=0x7f090042;
         public static final int action_divider=0x7f090076;
+        public static final int action_logout=0x7f090093;
         public static final int action_menu_divider=0x7f090005;
         public static final int action_menu_presenter=0x7f090006;
         public static final int action_mode_bar=0x7f09003e;
         public static final int action_mode_bar_stub=0x7f09003d;
         public static final int action_mode_close_button=0x7f090023;
-        public static final int action_settings=0x7f090093;
         public static final int activity_chooser_view_content=0x7f090024;
         public static final int alertTitle=0x7f090030;
         public static final int always=0x7f090019;
@@ -2334,7 +2334,7 @@ containing a value of this type.
         /**  Content description for the Toolbar icon used to collapse an expanded action mode. [CHAR LIMIT=NONE] 
          */
         public static final int abc_toolbar_collapse_description=0x7f0a0004;
-        public static final int action_settings=0x7f0a0016;
+        public static final int action_logout=0x7f0a0016;
         public static final int app_name=0x7f0a0014;
         public static final int hello_world=0x7f0a0015;
         /**  Text to use when the number in a notification info is too large

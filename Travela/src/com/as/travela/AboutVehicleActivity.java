@@ -4,8 +4,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,8 +26,13 @@ public class AboutVehicleActivity extends TabActivity
     {
         super.onCreate(savedInstanceState);
         
+        //image button logout
+        ImageButton bImgLogout=(ImageButton)findViewById(R.id.imageButton1);
+        
         // Session class instance
         session = new SessionManager(getApplicationContext());
+        
+        
         
         Toast.makeText(getApplicationContext(), "User Login Status: " + session.isLoggedIn(), Toast.LENGTH_LONG).show();
         
@@ -69,6 +77,18 @@ public class AboutVehicleActivity extends TabActivity
             TextView tv = (TextView) tabHost.getTabWidget().getChildAt(i).findViewById(android.R.id.title); //Unselected Tabs
             tv.setTextColor(Color.parseColor("#ffffff"));
         } 
+        
+        //create listner for logout
+        bImgLogout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				SessionManager session= new SessionManager(getApplicationContext());
+				session.logoutUser();
+			}
+		});
+        
      }
 
 	
