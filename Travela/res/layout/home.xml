@@ -3,38 +3,90 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#027cd5"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:layout_margin="5dp"
+    
+     >
 
     <include layout="@layout/toolbar_actionbar_with_headerbar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center" 
+        android:paddingTop="108dp"
+        android:paddingBottom="36dp">
     
+     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="27dp" >
+        
+         
+
+                  
     <Button
         android:id="@+id/button2"
         android:layout_width="250dp"
         android:layout_height="60dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="150dp"
+        android:layout_gravity="start"
         android:background="@drawable/buttonshape"
         android:shadowColor="#A8A8A8"
         android:shadowDx="0"
         android:shadowDy="0"
+        android:layout_margin="5dp"
         android:shadowRadius="13"
-        android:text="renter"
+        android:text="RENTER"
         android:textColor="#000000"
         android:textSize="30sp" />
+    
+    
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        
+        android:layout_gravity="start"
+        android:text="Want to hire vehicle..."
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#ffff1c" />
+	</LinearLayout>
 
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical"
+	    android:paddingTop="27dp" >
+   
+    
+     
+  	          
     <Button
         android:id="@+id/button1"
         android:layout_width="250dp"
         android:layout_height="60dp"
-        android:layout_gravity="center"
+        android:layout_gravity="end"
         android:layout_margin="5dp"
         android:background="@drawable/buttonshape"
         android:shadowColor="#A8A8A8"
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="13"
-        android:text="owner"
+        android:text="OWNER"
         android:textColor="#000000"
         android:textSize="30sp" />
-
+    
+    <TextView
+              android:id="@+id/textView2"
+              android:layout_width="250dp"
+              android:layout_height="wrap_content"
+              android:layout_gravity="end"
+              android:textColor="#ffff1c"
+              android:textAppearance="?android:attr/textAppearanceLarge" 
+              android:text="Give a vehicle on Rent"
+              />
+    </LinearLayout>
+</LinearLayout>
 </LinearLayout>

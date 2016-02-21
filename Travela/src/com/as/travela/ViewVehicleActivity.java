@@ -1,8 +1,15 @@
 package com.as.travela;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.apache.http.HttpEntity;
@@ -25,14 +32,33 @@ import org.json.JSONObject;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import com.google.gson.Gson;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -55,7 +81,7 @@ public class ViewVehicleActivity extends Activity
 	ArrayList<Vehicle> list_vehicle=new ArrayList<Vehicle>();
 	VehicleAdapter adapter;
 	//static String imageName="";
-	
+	TextView emptyText;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -64,6 +90,8 @@ public class ViewVehicleActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.view_vehicle_new);
 		listview=(ListView)findViewById(R.id.listView1);
+		emptyText=(TextView)findViewById(R.id.textView1);
+		listview.setEmptyView(emptyText);
 		SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
 		owner_id=sp.getInt("owner_id", 0);
 		String url=WebHelper.baseUrl+"/Vehicle_Servlet";
@@ -99,7 +127,7 @@ public class ViewVehicleActivity extends Activity
 			public View getView(int position, View convertView, ViewGroup parent) {
 				
 				final Vehicle v = list_vehicle.get(position);
-				
+				//final int v_id=v.getVehicleId();
 				//load the view/UI for item
 				LayoutInflater inf = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
 				View itemView=inf.inflate(R.layout.showvehicle,null);
@@ -125,13 +153,17 @@ public class ViewVehicleActivity extends Activity
 				SharedPreferences.Editor editor=sp1.edit();
 				editor.putInt("vehicle_id", vehicle_id);
 				editor.commit();
-				
-				String url=WebHelper.phpUrl+"/uploads/"+imageName;
+
+				String url=WebHelper.baseUrl+"/uploads/"+imageName;
 		        ImageTask task=new ImageTask();
-		    	task.execute(url,owner_id+"",vehicle_id+"",img);
-		   
-				final Intent in=new Intent(ViewVehicleActivity.this,EditVehicle.class);
+		        String oid=owner_id+"";
+				String vid=vehicle_id+"";
+				String imgName=oid+vid+".jpg";
+				
+		    	task.execute(url,img,imgName);
+		    	final Intent in=new Intent(ViewVehicleActivity.this,EditVehicle.class);
 				in.putExtra("vehicle", v);
+				
 				
 				edit.setOnClickListener(new OnClickListener() 
 				{
@@ -139,9 +171,9 @@ public class ViewVehicleActivity extends Activity
 					@Override
 					public void onClick(View v)
 					{
-
-						startActivity(in);
 						
+						startActivity(in);
+						ViewVehicleActivity.this.finish();
 						
 					}
 				});
@@ -149,13 +181,13 @@ public class ViewVehicleActivity extends Activity
 				{
 					
 					@Override
-					public void onClick(View v) 
+					public void onClick(View view) 
 					{
+						int v_id=v.getVehicleId();
 						String url=WebHelper.baseUrl+"/DeleteVehicleServlet";
 						DeleteTask task=new DeleteTask();
-						task.execute(url,vehicle_id+"");
-						
-			
+						task.execute(url,v_id+"");
+						Log.e("deletion id",v_id+"");
 						
 					}
 				});
@@ -163,65 +195,6 @@ public class ViewVehicleActivity extends Activity
 			}
 			
 			
-		}
-		
-		class DeletePhotoTask extends AsyncTask<String,Void,String>
-		{
-
-			@SuppressWarnings("deprecation")
-			@Override
-			protected String doInBackground(String... params) 
-			{
-				String url=params[0];
-				int vehicle_id=Integer.valueOf(params[1]);
-				int owner_id=Integer.valueOf(params[2]);
-				
-				InputStream is;
-			    
-				ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-				String o=owner_id+"";
-				String v=vehicle_id+"";
-				String imgName=o+v+".jpg";
-				
-				nameValuePairs.add(new BasicNameValuePair("cmd",imgName));
-				Log.v("image del name", imgName);
-				
-				try
-				{
-				        HttpClient httpclient = new DefaultHttpClient();
-				        HttpPost httppost = new HttpPost(url);
-				        Log.e("path=",url);
-				        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-				        HttpResponse response = httpclient.execute(httppost);
-				        Log.e("response del",response+"");
-				        HttpEntity entity = response.getEntity();
-				        is = entity.getContent();
-				        Log.e("is=" ,is+"");
-				 }
-				catch(Exception e)
-				{
-				   Log.v("log_tag", "Error in http connection "+e.toString());
-				}
-				return "Success";
-			}
-			
-			@Override
-			protected void onPostExecute(String result) 
-			{
-				super.onPostExecute(result);
-				try 
-				{
-					
-					Toast.makeText(ViewVehicleActivity.this, "Photo Deleted", Toast.LENGTH_LONG).show();
-				}
-				catch (Exception e)
-				{
-					Toast.makeText(getApplicationContext(),
-							e.getMessage(),Toast.LENGTH_LONG).show();
-					Log.e(e.getClass().getName(), e.getMessage(), e);
-				}
-			
-			}
 		}
 		
 		class ImageTask extends AsyncTask<Object, Void, Bitmap>
@@ -232,12 +205,28 @@ public class ViewVehicleActivity extends Activity
 			protected Bitmap doInBackground(Object... params)
 			{
 				String url=params[0].toString();
+				String imgName = params[2].toString();
+				
 				HttpGet getReq=new HttpGet(url);
 				Log.e("Url is",url);
 				HttpClient client=new DefaultHttpClient();
 				Bitmap bm=null;
-				img=(ImageView)params[3];
-				
+				img=(ImageView)params[1];
+
+				ApplicationInfo appInfo=getApplicationInfo();
+				String appPackageDir=appInfo.dataDir+"/userdir";
+				File fi=new File(appPackageDir,imgName);
+				if(fi.exists())
+				{
+					bm=BitmapFactory.decodeFile(fi.getAbsolutePath());
+					boolean b=fi.exists();
+					boolean b1=fi.isFile();
+					Log.e("existence ",b+" and isfile "+b1);
+					Log.e("file ", fi+"");
+
+				}
+				else
+				{
 				try
 				{
 					HttpResponse resp=client.execute(getReq);
@@ -249,8 +238,12 @@ public class ViewVehicleActivity extends Activity
 				{
 					Log.e("Exception 1",ex+"");
 				}
+			}
 				Log.e("bitmap",bm+"");
+				
 				return bm;
+			
+
 			}
 			
 			@Override
@@ -268,6 +261,98 @@ public class ViewVehicleActivity extends Activity
 			}
 		}
 
+		
+		class DeletePhotoTask extends AsyncTask<String,Void,String>
+		{
+
+			@SuppressWarnings("deprecation")
+			@Override
+			protected String doInBackground(String... params) 
+			{
+			HttpPost postReq=new HttpPost(params[0]);
+			Log.e("url ",params[0]+"");
+			int vehicle_id=Integer.valueOf(params[1]);
+			int owner_id=Integer.valueOf(params[2]);
+			String o=owner_id+"";
+			String v=vehicle_id+"";
+			String imgName=o+v+".jpg";
+			String str="";
+			ApplicationInfo appInfo=getApplicationInfo();
+			String appPackageDir=appInfo.dataDir+"/userdir";
+			File fi=new File(appPackageDir,imgName);
+			if(fi.exists())
+			{
+				boolean b=fi.delete();
+				Log.e("file Deleted ", b+"");
+			}
+			BasicNameValuePair pair1=
+					new BasicNameValuePair("imageName",imgName);			
+			ArrayList<BasicNameValuePair> listPairs=
+					new ArrayList<BasicNameValuePair>();
+			listPairs.add(pair1);
+			
+			String result="";
+			try
+			{
+				UrlEncodedFormEntity entity=new UrlEncodedFormEntity(listPairs);
+				postReq.setEntity(entity);			
+				Log.e("entity is",entity+"");
+				
+				//send request to server
+				
+				HttpClient client=new DefaultHttpClient();
+				HttpResponse resp=client.execute(postReq);
+				Log.e("response:",resp+"");
+				
+				InputStream is=resp.getEntity().getContent();
+				InputStreamReader reader=new InputStreamReader(is);
+				BufferedReader br=new BufferedReader(reader);
+				Log.e("br ",br+"");
+				
+				
+				while(true)
+				{
+					
+					Log.e("in loop","loop");
+					
+					String s=br.readLine();
+					if(s==null) 
+						break;
+					result=result+s;
+				}
+				br.close();
+				
+				
+			}catch(Exception ex) 
+			{
+				Log.e("Exception",ex+"");
+				
+			}
+			Log.e("image del name", imgName);		
+			return result;
+		
+			}
+			
+			@Override
+			protected void onPostExecute(String result) 
+			{
+				super.onPostExecute(result);
+				try 
+				{
+					Log.e("result of delete", result);
+					
+					//Toast.makeText(ViewVehicleActivity.this, "Photo Deleted", Toast.LENGTH_LONG).show();
+				}
+				catch (Exception e)
+				{
+					Toast.makeText(getApplicationContext(),
+							e.getMessage(),Toast.LENGTH_LONG).show();
+					Log.e(e.getClass().getName(), e.getMessage(), e);
+				}
+			
+			}
+		}
+	
 		class DeleteTask extends AsyncTask<String, Void, String>
 		{
 			
@@ -329,18 +414,24 @@ public class ViewVehicleActivity extends Activity
 				super.onPostExecute(result);
 				
 				Log.e("result",result);
+				int res=Integer.valueOf(result);
+			      
 				//if fail or error
-				if(result.equals("2"))
+				if(res>=1)
 				{
-					String url2=WebHelper.phpUrl+"/delete_photo.php";
+					String url2=WebHelper.baseUrl+"/DeletionServlet";
 					DeletePhotoTask dltTask=new DeletePhotoTask();
 					dltTask.execute(url2,vehicle_id+"",owner_id+"");
 					
+					
+
 					Toast.makeText(ViewVehicleActivity.this,
 						"Deleted Successfully ", Toast.LENGTH_LONG).show();
 					Intent in=new Intent(ViewVehicleActivity.this,
-							ViewVehicleActivity.class);
+							AboutVehicleActivity.class);
+					
 					startActivity(in);
+					ViewVehicleActivity.this.finish();
 			
 				}
 				else

@@ -59,7 +59,7 @@ public class VehicleList extends TabActivity{
       
         if(current_tab==0)
         {
-        	Toast.makeText(VehicleList.this,"two wheeler", 5).show();
+        	//Toast.makeText(VehicleList.this,"two wheeler", 5).show();
         	
         	
         	
@@ -74,13 +74,13 @@ public class VehicleList extends TabActivity{
       
 		        if(current_tab==0)
 		        {
-		        	Toast.makeText(VehicleList.this,"two wheeler", 5).show();
+		        	//Toast.makeText(VehicleList.this,"two wheeler", 5).show();
 		        	
 		            
 		        }
 		        if(current_tab==1)
 		        {
-		        	Toast.makeText(VehicleList.this,"four wheeler", 5).show();
+		        	//Toast.makeText(VehicleList.this,"four wheeler", 5).show();
 		        	
 		        }
 			}

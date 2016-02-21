@@ -1,7 +1,10 @@
 package com.as.travela;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 
 import org.apache.http.HttpEntity;
@@ -14,11 +17,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.as.travela.VehiclePhotoActivity.FileUploadTask;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -45,6 +51,8 @@ public class EditVehiclePhotoActivity extends ActionBarActivity
 	private ImageView imgView;
 	private Button upload,cancel;
 	private Bitmap bitmap;
+	String imgName="";
+	
 	private ProgressDialog dialog;
 	Uri imageUri, selectedImageUri;
 	int owner_id,vehicle_id;
@@ -70,11 +78,23 @@ public class EditVehiclePhotoActivity extends ActionBarActivity
 		upload = (Button) findViewById(R.id.button1);
 		cancel = (Button) findViewById(R.id.button2);
 		SharedPreferences spp=getSharedPreferences("settings", MODE_PRIVATE);
-		String imageName=spp.getString("editimage","");
-		String url=WebHelper.phpUrl+"/uploads/"+imageName;
+		imgName=spp.getString("editimage","");
+		
+		ApplicationInfo appInfo=getApplicationInfo();
+		String appPackageDir=appInfo.dataDir+"/userdir";
+		
+		final File f=new File(appPackageDir,imgName);
+		if(f.exists())
+		{
+			Bitmap bmp=BitmapFactory.decodeFile(f.getAbsolutePath());
+			imgView.setImageBitmap(bmp);
+		}
+		else
+		{
+		String url=WebHelper.baseUrl+"/uploads/"+imgName;
         ImageTask imgtask=new ImageTask();
-    	imgtask.execute(url,imgView);
-
+    	imgtask.execute(url,imgView,imgName);
+		}
 		
 		upload.setOnClickListener(new View.OnClickListener() {
 
@@ -88,7 +108,12 @@ public class EditVehiclePhotoActivity extends ActionBarActivity
 				{
 					dialog = ProgressDialog.show(EditVehiclePhotoActivity.this, "Uploading",
 							"Please wait...", true);
-					new VehiclePhotoTask().execute();
+					String filePath=f.getAbsolutePath();
+					FileUploadTask task=new FileUploadTask();
+					String vehicle_id1=String.valueOf(vehicle_id);
+					Log.e("v id" ,vehicle_id1);
+					task.execute(filePath,vehicle_id1);
+					
 				}
 			}
 		});
@@ -98,10 +123,13 @@ public class EditVehiclePhotoActivity extends ActionBarActivity
 			public void onClick(View v)
 			{
 				Intent in=new Intent(EditVehiclePhotoActivity.this,
-						ViewVehicleActivity.class);
+						AboutVehicleActivity.class);
+				
 				startActivity(in);
+				EditVehiclePhotoActivity.this.finish();
 			}
 		});
+		
 		gallery.setOnClickListener(new OnClickListener()
 		{
 			
@@ -113,6 +141,7 @@ public class EditVehiclePhotoActivity extends ActionBarActivity
 					Intent gintent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 					gintent.setType("image/*");
 					gintent.setAction(Intent.ACTION_GET_CONTENT);
+					
 					startActivityForResult(Intent.createChooser(gintent, "Select Picture"),
 					PICK_IMAGE);
 	        	} 
@@ -148,12 +177,59 @@ public class EditVehiclePhotoActivity extends ActionBarActivity
 		    	Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		    	intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
 		    	intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+
+
 		    	startActivityForResult(intent, PICK_Camera_IMAGE);
 		    }
 		});
 		
 	}
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		finish();
+		
+	}
 
+
+	class FileUploadTask extends AsyncTask<String, Void, String>
+	{
+
+		@Override
+		protected String doInBackground(String... params) {
+			// TODO Auto-generated method stub
+			String filePath=params[0];
+			final String veh=params[1];
+			String str="";
+			try{
+				URL u=new URL(WebHelper.baseUrl+"/UploadServlet");
+				MultipartUtility mpu=new MultipartUtility(u);
+				mpu.addFilePart("file", new File(filePath));
+				//mpu.addFormField("user_id", "12345");
+				mpu.addFormField("vehicle_id",veh);
+				byte []result=mpu.finish();
+				 str=new String(result);
+			}
+			catch(Exception ex)
+			{
+					str=ex.toString();
+			}
+			
+			return str;
+		}
+		@Override
+		protected void onPostExecute(String result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			Log.e("result", result);
+			Toast.makeText(EditVehiclePhotoActivity.this, "Image Added", Toast.LENGTH_LONG).show();
+			Intent in=new Intent(EditVehiclePhotoActivity.this,AboutVehicleActivity.class);
+			startActivity(in);
+			EditVehiclePhotoActivity.this.finish();
+		
+		}
+	}
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		String filePath = null;
@@ -229,148 +305,100 @@ public class EditVehiclePhotoActivity extends ActionBarActivity
 					}
 			}
 	}
-	class VehiclePhotoTask extends AsyncTask<Void, Void, String> 
+
+	public String getPath(Uri uri)
+	{
+		String[] projection = {MediaStore.Images.Media.DATA};
+		for(int i=0;i<projection.length;i++)
 		{
-				@SuppressWarnings("unused")
-				@Override
-				protected String doInBackground(Void... unsued) 
-				{
-						InputStream is;
-					    BitmapFactory.Options bfo;
-					    Bitmap bitmapOrg;
-					    ByteArrayOutputStream bao;
-					   
-					    bfo = new BitmapFactory.Options();
-					    bfo.inSampleSize = 2;
-					    //bitmapOrg = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + "/" + customImage, bfo);
-					      
-					    bao = new ByteArrayOutputStream();
-					    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bao);
-						byte [] ba = bao.toByteArray();
-						String ba1 = Base64.encodeBytes(ba);
-						SharedPreferences s=getSharedPreferences("settings",MODE_PRIVATE);
-						
-						owner_id=s.getInt("owner_id", 0);
-						vehicle_id=s.getInt("edit_vehicle_id", 0);
-						Log.e("Owner id",owner_id+"");
-						Log.e("Vehicle id",vehicle_id+"");
-						
-						ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-						nameValuePairs.add(new BasicNameValuePair("image",ba1));
-						nameValuePairs.add(new BasicNameValuePair("owner_id", owner_id+""));
-						nameValuePairs.add(new BasicNameValuePair("vehicle_id", vehicle_id+""));
-						String o=owner_id+"";
-						String v=vehicle_id+"";
-						String imgName=o+v+".jpg";
-						
-						nameValuePairs.add(new BasicNameValuePair("cmd",imgName));
-						Log.v("image basic name", imgName);
-						SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
-						
-						//open editor to edit content in settings
-						SharedPreferences.Editor editor=sp.edit();
-						editor.putString("imageName",imgName);
-						editor.commit();
-						
-						try
-						{
-						        HttpClient httpclient = new DefaultHttpClient();
-						        HttpPost httppost = new 
-		                
-						        //Here you need to put your server file address
-						        HttpPost(WebHelper.phpUrl+"/upload_photo.php");
-						        Log.e("path=",WebHelper.phpUrl+"/upload_photo.php");
-						        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-						        HttpResponse response = httpclient.execute(httppost);
-						        HttpEntity entity = response.getEntity();
-						        is = entity.getContent();
-						        
-						}
-						catch(Exception e)
-						{
-						   Log.v("log_tag", "Error in http connection "+e.toString());
-						}
-					return "Success";
-					// (null);
-				}
+			Log.e("Projection",projection[i]+"");
+		}
+		Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+		if (cursor != null) {
+			// HERE YOU WILL GET A NULLPOINTER IF CURSOR IS NULL
+			// THIS CAN BE, IF YOU USED OI FILE MANAGER FOR PICKING THE MEDIA
+			int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+			cursor.moveToFirst();
+			return cursor.getString(column_index);
+		} 
+		else
+			return null;
+	}
 
-				@Override
-				protected void onProgressUpdate(Void... unsued) {
+	public void decodeFile(String filePath)
+	{
+		// Decode image size
+		BitmapFactory.Options o = new BitmapFactory.Options();
+		o.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(filePath, o);
 
-				}
+		// The new size we want to scale to
+		final int REQUIRED_SIZE = 1024;
+		Log.e("Decoding",filePath+"");
+		
+		// Find the correct scale value. It should be the power of 2.
+		int width_tmp = o.outWidth, height_tmp = o.outHeight;
+		int scale = 1;
+		while (true) 
+		{
+			if (width_tmp < REQUIRED_SIZE && height_tmp < REQUIRED_SIZE)
+				break;
+			width_tmp /= 2;
+			height_tmp /= 2;
+			scale *= 2;
+		}
 
-				@Override
-				protected void onPostExecute(String sResponse) 
-				{
-					try 
-					{
-						if (dialog.isShowing())
-							dialog.dismiss();
-				
-						Toast.makeText(EditVehiclePhotoActivity.this, "Image Added", Toast.LENGTH_LONG).show();
-						Intent in=new Intent(EditVehiclePhotoActivity.this,ViewVehicleActivity.class);
-						startActivity(in);
-					}
-					catch (Exception e)
-					{
-						Toast.makeText(getApplicationContext(),
-								e.getMessage(),Toast.LENGTH_LONG).show();
-						Log.e(e.getClass().getName(), e.getMessage(), e);
-					}
-				}
+		// Decode with inSampleSize
+		BitmapFactory.Options o2 = new BitmapFactory.Options();
+		o2.inSampleSize = scale;
+		bitmap = BitmapFactory.decodeFile(filePath, o2);
+		imgView.setImageAlpha(255);
+		imgView.setImageBitmap(bitmap);
+		
+		//save image data in  your app folder
+		ApplicationInfo appInfo=getApplicationInfo();
+		String appPackageDir=appInfo.dataDir;
+		
+		//create folder in app dir
+		String folderPath=appPackageDir+"/userdir";
+		File userdir=new File(folderPath);
+		
+		//create folder in external memory card
+		//get external memory card path
+		//String sdcardPath=Environment.getExternalStorageDirectory().getAbsolutePath();
+		//File userdir=new File(sdcardPath+"/userdir");
+		
+		if(!userdir.exists() ) //no dir exist on this path
+			userdir.mkdir();
+		
+		
+		File f=new File(userdir, imgName);
+		try{
+			FileOutputStream fout=
+				new FileOutputStream(f);
+			//bmp.compress(format, quality, stream);
+			boolean result=bitmap.compress(Bitmap.CompressFormat.PNG,
+					100, fout);
+			if(result==true)
+			 Toast.makeText(EditVehiclePhotoActivity.this,
+					 "Photo Updated", Toast.LENGTH_SHORT).show();
+			
+			fout.close();
+			
+		}catch(Exception ex)
+		{
+			Log.e("error;", ex.toString());
+		}
+		
+		
 
-			}
 
-			public String getPath(Uri uri)
-			{
-				String[] projection = {MediaStore.Images.Media.DATA};
-				for(int i=0;i<projection.length;i++)
-				{
-					Log.e("Projection",projection[i]+"");
-				}
-				Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-				if (cursor != null) {
-					// HERE YOU WILL GET A NULLPOINTER IF CURSOR IS NULL
-					// THIS CAN BE, IF YOU USED OI FILE MANAGER FOR PICKING THE MEDIA
-					int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-					cursor.moveToFirst();
-					return cursor.getString(column_index);
-				} 
-				else
-					return null;
-			}
+	}
 
-			public void decodeFile(String filePath)
-			{
-				// Decode image size
-				BitmapFactory.Options o = new BitmapFactory.Options();
-				o.inJustDecodeBounds = true;
-				BitmapFactory.decodeFile(filePath, o);
 
-				// The new size we want to scale to
-				final int REQUIRED_SIZE = 1024;
-				Log.e("Decoding",filePath+"");
-				
-				// Find the correct scale value. It should be the power of 2.
-				int width_tmp = o.outWidth, height_tmp = o.outHeight;
-				int scale = 1;
-				while (true) 
-				{
-					if (width_tmp < REQUIRED_SIZE && height_tmp < REQUIRED_SIZE)
-						break;
-					width_tmp /= 2;
-					height_tmp /= 2;
-					scale *= 2;
-				}
 
-				// Decode with inSampleSize
-				BitmapFactory.Options o2 = new BitmapFactory.Options();
-				o2.inSampleSize = scale;
-				bitmap = BitmapFactory.decodeFile(filePath, o2);
 
-				imgView.setImageBitmap(bitmap);
-
-			}
+	
 			class ImageTask extends AsyncTask<Object, Void, Bitmap>
 		    {
 				ImageView img;
@@ -384,7 +412,22 @@ public class EditVehiclePhotoActivity extends ActionBarActivity
 					HttpClient client=new DefaultHttpClient();
 					Bitmap bm=null;
 					img=(ImageView)params[1];
-					
+					ApplicationInfo appInfo=getApplicationInfo();
+					String appPackageDir=appInfo.dataDir+"/userdir";
+					String imgName=params[2].toString();
+					File fi=new File(appPackageDir,imgName);
+					if(fi.exists())
+					{
+						bm=BitmapFactory.decodeFile(fi.getAbsolutePath());
+						boolean b=fi.exists();
+						boolean b1=fi.isFile();
+						Log.e("existence ",b+" and isfile "+b1);
+						Log.e("file ", fi+"");
+
+					}
+					else
+					{
+
 					try
 					{
 						HttpResponse resp=client.execute(getReq);
@@ -395,6 +438,7 @@ public class EditVehiclePhotoActivity extends ActionBarActivity
 					catch(Exception ex)
 					{
 						Log.e("Exception 1",ex+"");
+					}
 					}
 					Log.e("bitmap",bm+"");
 					return bm;

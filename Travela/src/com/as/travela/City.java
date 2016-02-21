@@ -1,6 +1,9 @@
 package com.as.travela;
 
-public class City {
+import android.util.Log;
+
+public class City 
+{
 	String city_name;
 
 	public String getCity_name() {
@@ -23,6 +26,28 @@ public class City {
 	@Override
 	public String toString() {
 		return city_name;
+	}
+	
+	/*@Override
+	public int hashCode() {
+		int hashcode=1;
+		hashcode=hashcode*37+this.city_name.hashCode();
+		return hashcode;
+	}*/
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(!(obj instanceof City))
+		{
+			return false;
+		}
+		
+		City c=(City)obj; 
+		Log.e(c.city_name+" City",this.city_name+" City java");
+		return this.city_name.equals(c.city_name);
+		
+		
 	}
 	
 	

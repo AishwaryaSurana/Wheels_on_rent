@@ -70,72 +70,6 @@ public class AddVehicleActivity extends Activity
 		ed4=(EditText)findViewById(R.id.editText4);
 		ed5=(EditText)findViewById(R.id.editText5);
 		
-		ed1.setOnEditorActionListener(new EditText.OnEditorActionListener() {
-
-			@Override
-			public boolean onEditorAction(TextView v, int actionId,
-					KeyEvent event)
-			{ if (actionId == EditorInfo.IME_ACTION_DONE) {
-	             b1.performClick();
-	             return true;
-	         }
-	      	return false;
-			}
-		 });
-
-		ed2.setOnEditorActionListener(new EditText.OnEditorActionListener() {
-
-			@Override
-			public boolean onEditorAction(TextView v, int actionId,
-					KeyEvent event)
-			{ if (actionId == EditorInfo.IME_ACTION_DONE) {
-	             b1.performClick();
-	             return true;
-	         }
-	      	return false;
-			}
-		 });
-
-		ed3.setOnEditorActionListener(new EditText.OnEditorActionListener() {
-
-			@Override
-			public boolean onEditorAction(TextView v, int actionId,
-					KeyEvent event)
-			{ if (actionId == EditorInfo.IME_ACTION_DONE) {
-	             b1.performClick();
-	             return true;
-	         }
-	      	return false;
-			}
-		 });
-
-		ed4.setOnEditorActionListener(new EditText.OnEditorActionListener() {
-
-			@Override
-			public boolean onEditorAction(TextView v, int actionId,
-					KeyEvent event)
-			{ if (actionId == EditorInfo.IME_ACTION_DONE) {
-	             b1.performClick();
-	             return true;
-	         }
-	      	return false;
-			}
-		 });
-
-		ed5.setOnEditorActionListener(new EditText.OnEditorActionListener() {
-
-			@Override
-			public boolean onEditorAction(TextView v, int actionId,
-					KeyEvent event)
-			{ if (actionId == EditorInfo.IME_ACTION_DONE) {
-	             b1.performClick();
-	             return true;
-	         }
-	      	return false;
-			}
-		 });
-
-
 		wheelerSpinner=(Spinner)findViewById(R.id.spinner1);
 		typeSpinner=(Spinner)findViewById(R.id.spinner2);
 		seaterSpinner=(Spinner)findViewById(R.id.spinner3);
@@ -167,13 +101,7 @@ public class AddVehicleActivity extends Activity
 					int position, long id) 
 			{
 				seater=alSeater.get(position);
-				int seaterPosition=position;
-				SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
-				
-				SharedPreferences.Editor editor=sp.edit();
-				editor.putInt("seaterPosition", seaterPosition);
-				editor.commit();
-				}
+			}
 
 			@Override
 	
@@ -200,12 +128,6 @@ public class AddVehicleActivity extends Activity
 					int position, long id) 
 			{
 				wheelerType=alWheeler.get(position);
-				int wheelerPosition=position;
-				SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
-				
-				SharedPreferences.Editor editor=sp.edit();
-				editor.putInt("wheelerPosition", wheelerPosition);
-				editor.commit();
 				
 				if(position==0)
 				{
@@ -252,12 +174,6 @@ public class AddVehicleActivity extends Activity
 							View view, int position, long id)
 					{
 						vType=alType.get(position);
-						int typePosition=position;
-						SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
-						
-						SharedPreferences.Editor editor=sp.edit();
-						editor.putInt("typePosition",typePosition);
-						editor.commit();
 						
 					}
 
@@ -286,16 +202,20 @@ public class AddVehicleActivity extends Activity
 			{
 				Intent in=new Intent(AddVehicleActivity.this,
 						Terms.class);
+				
 				startActivity(in);
 			
 			}
 		});
 		b1.setEnabled(false);
+		b1.setAlpha(0.5f);
 		ch3.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				
 				b1.setEnabled(isChecked);
+				b1.setAlpha(1.0f);
 			}
 		});
 		b1.setOnClickListener(new OnClickListener()
@@ -333,38 +253,26 @@ public class AddVehicleActivity extends Activity
 				seater=Integer.valueOf(seater1);
 				type=(String)typeSpinner.getSelectedItem();
 				availability="Available";
-				boolean chkd1=false;
-				boolean chkd2=false;
 				if(ch1.isChecked()&&ch2.isChecked())
 				{
-					chkd1=chkd2=true;
 					driver="with and without";
 					
 				}
 				else if(ch1.isChecked())
 				{
-					chkd1=true;
 					driver="only with";
 					
 				}
 				else if(ch2.isChecked())
 				{
-					chkd2=true;
 					driver="only without";
 					
 				}
-				SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
-				
-				SharedPreferences.Editor editor=sp.edit();
-				editor.putBoolean("with",chkd1);
-				editor.putBoolean("withOut",chkd2);
-				editor.commit();
 				String st,ct;
 				
 				st=(String)stateSpinner.getSelectedItem();
 				if(st.equals("Select State"))
 				{
-					Toast.makeText(AddVehicleActivity.this, "Please Select State",Toast.LENGTH_SHORT).show();
 					state="";
 				}
 				else
@@ -379,7 +287,6 @@ public class AddVehicleActivity extends Activity
 				
 				if(ct.equals("Select City")||ct.equals(""))
 				{
-					Toast.makeText(AddVehicleActivity.this, "Please Select City",Toast.LENGTH_SHORT).show();
 					city="";
 				}
 				else
@@ -392,7 +299,7 @@ public class AddVehicleActivity extends Activity
 		    	//regNo,vehicleName,rent1,rent2,availability,wheeler1,seater1,location,type,driver = null,state,city;
 				//int wheeler,seater;
 				//double rent_per_km=0, rent_daily=0;
-		    	if(!(regNo.equals("")||vehicleName.equals("")||driver.equals("")||state.equals("")||city.equals("")))
+		    	if(!(regNo.equals("")||vehicleName.equals("")||driver.equals("")||state.equals("")||city.equals("")||rent_per_km==0.0))
 	                	{
 	                	flag=true;
 	                	}
@@ -413,13 +320,18 @@ public class AddVehicleActivity extends Activity
 	             {
 	            	 Toast.makeText(AddVehicleActivity.this,"Enter all required fields", 5).show();
 	             }
-			
-			}catch(NullPointerException nl)
+			}
+			catch(NumberFormatException nmb)
+				{
+					Log.e("Error in num",nmb+"");
+					Toast.makeText(AddVehicleActivity.this,"Enter Valid Rent", Toast.LENGTH_SHORT).show();
+				}
+				catch(NullPointerException nl)
 				{
 				Log.e("Error is there",nl+"");
 				Toast.makeText(AddVehicleActivity.this, "Enter Required fields", Toast.LENGTH_SHORT).show();
 				}
-				}
+			}
 		});
 		
 		
@@ -456,19 +368,10 @@ public class AddVehicleActivity extends Activity
 				}
 				else
 				{
-				SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
-				
-				SharedPreferences.Editor editor=sp.edit();
-				editor.putInt("statePosition", statePosition);
-				editor.commit();
-				
-				//String state1=s.getState_name();
-				Log.e("state selected",s);
-				
-			//	text1.setText(state1);			
-				City_Task city_task= new City_Task();
-				String city_url=WebHelper.baseUrl+"/City_Servlet";
-				city_task.execute(city_url,s);
+					Log.e("state selected",s);
+					City_Task city_task= new City_Task();
+					String city_url=WebHelper.baseUrl+"/City_Servlet";
+					city_task.execute(city_url,s);
 				}
 			
 			}
@@ -480,6 +383,14 @@ public class AddVehicleActivity extends Activity
 			}
 		});		
 		}
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		finish();
+		
+	}
+
 
 //create asynk task to get city list corresponding to state
 class City_Task extends AsyncTask<String, String, String>
@@ -555,18 +466,7 @@ class City_Task extends AsyncTask<String, String, String>
 				@Override
 				public void onItemSelected(AdapterView<?> parent, View view,
 						int position, long id) {
-					int cityPosition=position;
-					if(cityPosition==0)
-					{
-					}
-					else
-					{
-					SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
 					
-					SharedPreferences.Editor editor=sp.edit();
-					editor.putInt("cityPosition", cityPosition);
-					editor.commit();
-					}
 				}
 
 				@Override
@@ -641,6 +541,8 @@ class VehicleRegistrationTask extends AsyncTask<String, Void, String>
 	protected void onPostExecute(String result) 
 	{
 		super.onPostExecute(result);
+		if(!result.startsWith("error"))
+		{
 		int v_id=Integer.parseInt(result);
 		SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
 		SharedPreferences.Editor editor=sp.edit();
@@ -653,13 +555,23 @@ class VehicleRegistrationTask extends AsyncTask<String, Void, String>
 				"Vehicle Registered..", Toast.LENGTH_LONG).show();
 			Intent in=new Intent(AddVehicleActivity.this,
 					SplashScreen.class);
+			
 			startActivity(in);
+			AddVehicleActivity.this.finish();
 	
 		}
 		else
 		{
 			Toast.makeText(AddVehicleActivity.this,
 				"Vehicle Registration failed. try again !!", Toast.LENGTH_LONG).show();
+		}
+		}
+		else
+		{
+			Toast.makeText(AddVehicleActivity.this,
+					"Vehicle Registration failed. try again !!", Toast.LENGTH_LONG).show();
+			
+			
 		}
 			
 	}

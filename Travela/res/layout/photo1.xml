@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    
+    android:orientation="vertical" >
+    
+	 <include layout="@layout/toolbar_actionbar_with_headerbar" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center" >
+
+        <ProgressBar
+            android:id="@+id/progressBar1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload vehicle image.."
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+   
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="190dp"
+        android:layout_height="190dp"
+        android:padding="5px"
+        android:src="@drawable/ic_launcher" 
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:gravity="center">
+
+    	  <ImageButton
+                android:id="@+id/imageButton2"
+                android:layout_width="34dp"
+                android:layout_height="29dp"
+                android:src="@android:drawable/ic_menu_gallery" />
+
+            <ImageButton
+                android:id="@+id/imageButton1"
+                android:layout_width="39dp"
+                android:layout_height="33dp"
+                android:src="@android:drawable/ic_menu_camera" />
+        </LinearLayout>
+    	
+    	<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+    
+		<Button
+            android:id="@+id/button1"
+             android:textColor="#FFFFFF"				
+				android:textSize="24sp" 	
+				android:layout_width="160dp" 
+				android:layout_height="44dp"				
+				android:background="@drawable/buttonsearchshape" 				
+				android:shadowColor="#A8A8A8" 				
+				android:shadowDx="0" 				
+				android:shadowDy="0" 				
+				android:shadowRadius="5"
+            android:text="Add Image"
+            android:layout_marginRight="5dp" />
+
+		<Button
+		    android:id="@+id/button2"
+		    android:textColor="#FFFFFF"				
+				android:textSize="24sp" 	
+				android:layout_width="125dp" 
+				android:layout_height="44dp"				
+				android:background="@drawable/buttonsearchshape" 				
+				android:shadowColor="#A8A8A8" 				
+				android:shadowDx="0" 				
+				android:shadowDy="0" 				
+				android:shadowRadius="5"
+		    android:text="Skip" 
+		    android:layout_marginLeft="5dp"/>
+	     </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

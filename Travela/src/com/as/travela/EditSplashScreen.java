@@ -26,6 +26,7 @@ public class EditSplashScreen extends Activity {
 					Intent intent = new Intent(EditSplashScreen.this,
 							EditVehiclePhotoActivity.class);
 					intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+					
 					startActivity(intent);
 					EditSplashScreen.this.finish();
 				} catch (InterruptedException e) {

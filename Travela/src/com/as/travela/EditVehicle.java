@@ -15,16 +15,13 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
-
-
-import com.google.gson.Gson;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -39,7 +36,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-public class EditVehicle extends Activity
+import com.google.gson.Gson;
+
+public class EditVehicle extends ActionBarActivity
 {
 	EditText ed1,ed2,ed3,ed4,ed5;
 	Spinner wheelerSpinner,seaterSpinner,typeSpinner,citySpinner,stateSpinner;
@@ -58,27 +57,20 @@ public class EditVehicle extends Activity
 	ArrayAdapter<City> city_adapter;
 	
 
-	int getPos(String str)
-	{
-		SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
-    	int Position=sp.getInt(str,0);
-    	Log.e("Position",Position+"");
-    	return Position;
-	}
-
-	boolean getSelection(String str)
-	{
-		SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
-    	boolean selection=sp.getBoolean(str, true);
-    	//.e("Selection",selection+"");
-    	return selection;
-    	
-	}
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.edit_vehicle);
+		
+		Toolbar   t= new Toolbar(EditVehicle.this);
+		t.setNavigationIcon(R.drawable.ic_launcher);
+		
+		Toolbar toolbar= (Toolbar)findViewById(R.id.toolbar1);
+		setSupportActionBar(toolbar);
+		toolbar.setNavigationIcon(R.drawable.ic_launcher);
+		toolbar.setTitle("Travela");
+		toolbar.setTitleTextColor(Color.WHITE);
 		
 		ed1=(EditText)findViewById(R.id.editText1);
 		ed2=(EditText)findViewById(R.id.editText2);
@@ -106,7 +98,13 @@ public class EditVehicle extends Activity
 		double rent_per_km=v.getRent_per_km();
 		double rent_daily=v.getRent_daily();
 		String imageName=v.getImageName();
-		
+		String strwheeler=v.getWheeler()+"";
+		String strseater=v.getSeater()+"";
+		final String strtype=v.getType();
+		String strstate=v.getState();
+		final String strcity=v.getCity();
+		String strDriver=v.getDriver();
+		String strAvail=v.getAvailability();
 		SharedPreferences spp=getSharedPreferences("settings",MODE_PRIVATE);
 		SharedPreferences.Editor editor=spp.edit();
 		editor.putInt("edit_vehicle_id", vehicleId);
@@ -120,8 +118,40 @@ public class EditVehicle extends Activity
 		ed3.setText(rent_per_km+"");
 		ed4.setText(rent_daily+"");
 		
-		ch1.setChecked(getSelection("with"));
-		ch2.setChecked(getSelection("withOut"));
+		boolean chkd1=false;
+		boolean chkd2=false;
+		boolean chkd3=true;
+		if(strDriver.equalsIgnoreCase("with and without"))
+		{
+			chkd1=chkd2=true;
+			
+		}
+		else if(strDriver.equalsIgnoreCase("only with"))
+		{
+			chkd1=true;
+			
+		}
+		else if(strDriver.equalsIgnoreCase("only without"))
+		{
+			chkd2=true;
+			
+		}
+		
+		if(strAvail.equalsIgnoreCase("Available"))
+		{
+			chkd3=true;
+			ch3.setText(strAvail);
+		}
+		
+		
+		else if(strAvail.equalsIgnoreCase("Not Available"))
+		{
+			chkd3=false;
+			ch3.setText(strAvail);
+		}
+		ch1.setChecked(chkd1);
+		ch2.setChecked(chkd2);
+		ch3.setChecked(chkd3);
 
 		b1=(Button)findViewById(R.id.button1);
 		//b1.setEnabled(false);
@@ -135,7 +165,11 @@ public class EditVehicle extends Activity
 		seaterAdapter=new ArrayAdapter<String>(EditVehicle.this, android.R.layout.
 						simple_spinner_item,alSeater);
 		seaterSpinner.setAdapter(seaterAdapter);
-		seaterSpinner.setSelection(getPos("seaterPosition"));
+		if(!strseater.equals(null))
+		{
+			int spineerPos=seaterAdapter.getPosition(strseater);
+			seaterSpinner.setSelection(spineerPos);
+		}
 		seaterSpinner.setOnItemSelectedListener(new OnItemSelectedListener()
 		{
 
@@ -145,7 +179,7 @@ public class EditVehicle extends Activity
 			{
 				seater=alSeater.get(position);
 				
-				}
+			}
 
 			@Override
 	
@@ -162,9 +196,13 @@ public class EditVehicle extends Activity
 		}
 		wheelerAdapter=new ArrayAdapter<String>(EditVehicle.this, android.R.layout.simple_spinner_item,alWheeler);
 		wheelerSpinner.setAdapter(wheelerAdapter);
-
+		if(!strwheeler.equals(null))
+		{
+			int spineerPos=wheelerAdapter.getPosition(strwheeler);
+			wheelerSpinner.setSelection(spineerPos);
+		}
+		
 		final String type[]=new String[6];
-		wheelerSpinner.setSelection(getPos("wheelerPosition"));
 		
 		wheelerSpinner.setOnItemSelectedListener(new OnItemSelectedListener()
 		{
@@ -173,12 +211,6 @@ public class EditVehicle extends Activity
 					int position, long id) 
 			{
 				wheelerType=alWheeler.get(position);
-				int wheelerPosition=position;
-				SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
-				
-				SharedPreferences.Editor editor=sp.edit();
-				editor.putInt("wheelerPosition", wheelerPosition);
-				editor.commit();
 				
 				if(position==0)
 				{
@@ -217,8 +249,14 @@ public class EditVehicle extends Activity
 				}
 				typeAdapter=new ArrayAdapter<String>(EditVehicle.this, android.R.layout.simple_spinner_item,alType);
 				typeSpinner.setAdapter(typeAdapter);
+				if(!strtype.equals(null))
+				{
+					int spineerPos1=typeAdapter.getPosition(strtype);
+					typeSpinner.setSelection(spineerPos1);
+				}
 				
-				typeSpinner.setSelection(getPos("typePosition"));
+				
+				//typeSpinner.setSelection(getPos("typePosition"));
 							typeSpinner.setOnItemSelectedListener(new OnItemSelectedListener()
 				{
 
@@ -227,12 +265,6 @@ public class EditVehicle extends Activity
 							View view, int position, long id)
 					{
 						vType=alType.get(position);
-						int typePosition=position;
-						SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
-						
-						SharedPreferences.Editor editor=sp.edit();
-						editor.putInt("typePosition",typePosition);
-						editor.commit();
 						
 					}
 
@@ -269,18 +301,29 @@ public class EditVehicle extends Activity
 			@Override
 			public void onClick(View v) 
 			{
+				try
+				{
 				String regNo,vehicleName,rent1,rent2,availability,wheeler1,seater1;
 				String location,type,driver="",state,city;
 				int wheeler,seater;
-				double rent_per_km, rent_daily;
+				double rent_per_km=0, rent_daily = 0;
 				boolean flag=false;
 				vehicleName=ed1.getText().toString();
 				regNo=ed2.getText().toString();
 				location=ed5.getText().toString();
+				
 				rent1=ed3.getText().toString();
-				rent_per_km=Double.valueOf(rent1);
 				rent2=ed4.getText().toString();
-				rent_daily=Double.valueOf(rent2);
+					if(rent2.equals("")&&(!rent1.equals("")))
+					{
+						rent_per_km=Double.valueOf(rent1);
+					}	
+					else if(!rent2.equals("")&&(!rent1.equals("")))
+					{
+						rent_per_km=Double.valueOf(rent1);
+						rent_daily=Double.valueOf(rent2);
+					}
+				
 				wheeler1=(String)wheelerSpinner.getSelectedItem();
 				wheeler=Integer.valueOf(wheeler1);
 				seater1=(String)seaterSpinner.getSelectedItem();
@@ -359,6 +402,23 @@ public class EditVehicle extends Activity
 	            	 Toast.makeText(EditVehicle.this,"Enter all required fields", Toast.LENGTH_LONG).show();
 		             
 	             }
+}
+				catch(NullPointerException nl)
+				{
+				Log.e("Error is there",nl+"");
+				Toast.makeText(EditVehicle.this, "Enter Required fields", Toast.LENGTH_SHORT).show();
+				}
+				catch(NumberFormatException nmb)
+				{
+					Log.e("Error in num",nmb+"");
+					Toast.makeText(EditVehicle.this,"Enter Valid Rent", Toast.LENGTH_SHORT).show();
+				}
+				
+				catch(Exception s)
+				{
+					Log.e("ex", s+"");
+				}
+			
 				
 			}
 		});
@@ -383,7 +443,12 @@ public class EditVehicle extends Activity
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		
 		stateSpinner.setAdapter(adapter);
-		stateSpinner.setSelection(getPos("statePosition"));
+		if(!strstate.equals(null))
+		{
+			int spineerPos=adapter.getPosition(strstate);
+			stateSpinner.setSelection(spineerPos);
+		}
+		
 
 		stateSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -399,41 +464,45 @@ public class EditVehicle extends Activity
 				}
 				else
 				{
-				SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
+					Log.e("state selected",s);
 				
-				SharedPreferences.Editor editor=sp.edit();
-				editor.putInt("statePosition", statePosition);
-				editor.commit();
-				
-				//String state1=s.getState_name();
-				Log.e("state selected",s);
-				
-			//	text1.setText(state1);			
-				City_Task city_task= new City_Task();
-				String city_url=WebHelper.baseUrl+"/City_Servlet";
-				city_task.execute(city_url,s);
+					City_Task city_task= new City_Task();
+					String city_url=WebHelper.baseUrl+"/City_Servlet";
+					city_task.execute(city_url,s,strcity);
 				}
 			
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				// TODO Auto-generated method stub
 				
 			}
 		});		
 		}
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		finish();
+		
+	}
+
 
 //create asynk task to get city list corresponding to state
 class City_Task extends AsyncTask<String, String, String>
 {
 
+	String strcity1="";
+	City strcity=new City();
 	@Override
 	protected String doInBackground(String... params) {
 		
 		String result="";
 		HttpPost postReq=new HttpPost(params[0]);
 		BasicNameValuePair state= new BasicNameValuePair("state", params[1]);
+		strcity1=params[2];
+		strcity.setCity_name(strcity1);
+		Log.e("city is",strcity+"");
 		ArrayList<BasicNameValuePair> listPairs= new ArrayList<BasicNameValuePair>();
 		listPairs.add(state);
 		
@@ -494,25 +563,23 @@ class City_Task extends AsyncTask<String, String, String>
 			city_adapter = new ArrayAdapter<City>(EditVehicle.this,
 					android.R.layout.simple_spinner_item,city_name_list);
 			citySpinner.setAdapter(city_adapter);
-			citySpinner.setSelection(getPos("cityPosition"));
+			Log.e("city is",strcity+"");
+			if(!strcity.equals(null))
+			{
+				int spineerPos=city_adapter.getPosition(strcity);
+				Log.e("pos",spineerPos+"");
+				citySpinner.setSelection(spineerPos);
+			}
+			
+	//		citySpinner.setSelection(getPos("cityPosition"));
 
 			citySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 				@Override
 				public void onItemSelected(AdapterView<?> parent, View view,
 						int position, long id) {
-					int cityPosition=position;
-					if(cityPosition==0)
-					{
 					
-					}
-					else
-					{
-					SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
-					SharedPreferences.Editor editor=sp.edit();
-					editor.putInt("cityPosition", cityPosition);
-					editor.commit();
-					}
+					
 				}
 
 				@Override
@@ -524,7 +591,7 @@ class City_Task extends AsyncTask<String, String, String>
 		}
 		catch(Exception e)
 		{
-			Log.e("error3",e.getMessage());
+			Log.e("error3",e+"");
 		}
 		
 	}
@@ -593,7 +660,9 @@ class VehicleRegistrationTask extends AsyncTask<String, Void, String>
 				"Vehicle Updated..", Toast.LENGTH_LONG).show();
 			Intent in=new Intent(EditVehicle.this,
 					EditSplashScreen.class);
+			
 			startActivity(in);
+			EditVehicle.this.finish();
 	
 		}
 		else

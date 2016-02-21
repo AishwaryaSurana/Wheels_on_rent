@@ -1,7 +1,7 @@
 package com.as.travela;
 
 import java.util.HashMap;
-
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -42,7 +42,9 @@ public class SessionManager {
     public static final String KEY_OWNER="owner_id";
      
     // Constructor
-    public SessionManager(Context context){
+    @SuppressLint("CommitPrefEdits")
+	public SessionManager(Context context)
+    {
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
@@ -61,7 +63,7 @@ public class SessionManager {
         // Storing contact in pref
         editor.putString(KEY_CONTACT, contact);
         
-     // Storing email in pref
+        // Storing email in pref
         editor.putString(KEY_EMAIL, email);
         
         //Storing surname in pref
@@ -73,23 +75,47 @@ public class SessionManager {
         // commit changes
         editor.commit();
     }   
-     
+   
+    public void createLoginSession(String name, String contact,String surname,int ownerId){
+        // Storing login value as TRUE
+        editor.putBoolean(IS_LOGIN, true);
+         
+        // Storing name in pref
+        editor.putString(KEY_NAME, name);
+         
+        // Storing contact in pref
+        editor.putString(KEY_CONTACT, contact);
+        
+        //Storing surname in pref
+        editor.putString(KEY_SURNAME,surname);
+        
+        //storing ownerId in pref
+        editor.putInt(KEY_OWNER, ownerId);
+        
+        // commit changes
+        editor.commit();
+    }   
+   
     /**
      * Check login method wil check user login status
      * If false it will redirect user to login page
      * Else won't do anything
      * */
-    public void checkLogin(){
+    public void checkLogin()
+    {
         // Check login status
-        if(!this.isLoggedIn()){
+        if(this.isLoggedIn()){
             // user is not logged in redirect him to Login Activity
-            Intent i = new Intent(_context, LoginActivity.class);
+            Intent i = new Intent(_context,AboutVehicleActivity.class);
             // Closing all the Activities
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
              
             // Add new Flag to start new Activity
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
              
+          //finish login activity
+            LoginActivity.fa.finish();
+            
             // Staring Login Activity
             _context.startActivity(i);
         }
@@ -121,7 +147,7 @@ public class SessionManager {
         editor.clear();
         editor.commit();
          
-        // After logout redirect user to Loing Activity
+        // After logout redirect user to Login Activity
         Intent i = new Intent(_context, LoginActivity.class);
         // Closing all the Activities
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -129,7 +155,11 @@ public class SessionManager {
         // Add new Flag to start new Activity
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
          
+        //clear shared pref
+        pref.edit().clear().commit();
+        
         // Staring Login Activity
+        
         _context.startActivity(i);
     }
      

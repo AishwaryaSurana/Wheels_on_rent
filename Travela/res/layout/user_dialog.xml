@@ -23,11 +23,13 @@
         android:ems="10"
         android:hint="enter mobile no"
         android:inputType="phone" />
-	<RelativeLayout android:id="@+id/RelativeLayout01" 
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content"
-    android:gravity="center"
-    >
+
+	<RelativeLayout
+	    android:id="@+id/RelativeLayout01"
+	    android:layout_width="fill_parent"
+	    android:layout_height="60dp"
+	    android:gravity="center" >
+
     <Button
         android:id="@+id/button1"
        android:text="Submit" 
@@ -40,5 +42,23 @@
 				android:shadowDx="0" 				
 				android:shadowDy="0" 				
 				android:shadowRadius="5" />
+
+   
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="125dp"
+        android:layout_height="44dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/buttonsearchshape"
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:text="Cancel"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp" />
+    
 	</RelativeLayout>
 </LinearLayout>

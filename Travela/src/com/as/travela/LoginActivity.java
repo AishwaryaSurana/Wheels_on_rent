@@ -19,15 +19,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -35,6 +32,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 
+@SuppressWarnings("deprecation")
 public class LoginActivity extends ActionBarActivity
 {
 	EditText etContact,etPasword;
@@ -43,12 +41,22 @@ public class LoginActivity extends ActionBarActivity
      
     // Session Manager Class
     SessionManager session;
- 
+
+    public static Activity fa;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		
+		fa=this;
+		
+		// Session Manager
+        session = new SessionManager(getApplicationContext()); 
+		
+		session.checkLogin();
+		
 		setContentView(R.layout.login);
 		
 		Toolbar   t= new Toolbar(LoginActivity.this);
@@ -65,9 +73,7 @@ public class LoginActivity extends ActionBarActivity
 		btnLogin=(Button)findViewById(R.id.button1);
 		btnRegister=(Button)findViewById(R.id.button2);
 		
-		// Session Manager
-        session = new SessionManager(getApplicationContext());    
-
+		
 		
 		btnRegister.setOnClickListener(new OnClickListener() {
 			
@@ -76,6 +82,7 @@ public class LoginActivity extends ActionBarActivity
 				Intent in=new Intent(LoginActivity.this,
 						RegistrationActivity.class);
 				startActivity(in);
+				LoginActivity.this.finish();
 			}
 		});
 		
@@ -111,33 +118,20 @@ public class LoginActivity extends ActionBarActivity
 						}
 					});
 					   alert.show();
-				}
+				};
 
 			}
 		});
 		
 	}//eof on create
 	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_logout) {
-			SessionManager session=new SessionManager(getApplicationContext());
-			session.logoutUser();
-		}
-		return super.onOptionsItemSelected(item);
-	}
 	
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		//super.onBackPressed();
+		finish();
+	}
 	
 	class LoginTask extends AsyncTask<String, Void, String>
 	{
@@ -146,6 +140,7 @@ public class LoginActivity extends ActionBarActivity
 		{
 		
 			HttpPost postReq=new HttpPost(params[0]);
+			Log.e("url login",params[0]+"");
 			BasicNameValuePair pair1=
 					new BasicNameValuePair("contact_no", params[1]);			
 			BasicNameValuePair pair2=
@@ -206,7 +201,7 @@ public class LoginActivity extends ActionBarActivity
 			if(result.startsWith("fail") ||
 					result.startsWith("error") )
 			{
-				Toast.makeText(LoginActivity.this, result, 5).show();
+				Toast.makeText(LoginActivity.this, result, Toast.LENGTH_SHORT).show();
 			}
 			else
 			{
@@ -217,17 +212,18 @@ public class LoginActivity extends ActionBarActivity
 					int owner_id=obj.getInt("owner_id");
 					String name=obj.getString("name");
 					String surname=obj.getString("surname");
-					String email=obj.getString("email");
+					//String email=obj.getString("email");
 					String contact_no=obj.getString("contact_no");
-					
+					//Log.e("email",email);
 					//creating session for this user
-					  session.createLoginSession(name,contact_no,email,surname,owner_id);
+					  session.createLoginSession(name,contact_no,surname,owner_id);
 				
-					  Toast.makeText(LoginActivity.this, "logged in", 5).show();
+					  Toast.makeText(LoginActivity.this, "logged in", Toast.LENGTH_SHORT).show();
 						Intent in=new Intent(LoginActivity.this,
 								AboutVehicleActivity.class);
 						startActivity(in);
-						
+
+						LoginActivity.this.finish();
 				}
 				catch(Exception ex)
 				{

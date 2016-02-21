@@ -44,6 +44,10 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+
+
+
 import com.google.gson.Gson;
 
 public class TWActivity extends Activity
@@ -60,8 +64,9 @@ public class TWActivity extends Activity
 	ListView listview;
 	ArrayList<Vehicle> list_vehicle=new ArrayList<Vehicle>();
 	VehicleAdapter adapter;
-	
-	
+	TextView emptyText;
+	Dialog dlg_user;
+	Vehicle v1;
 	final String wheeler="2";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +80,8 @@ public class TWActivity extends Activity
 		b_search=(Button)findViewById(R.id.button1); 
 		
 		listview=(ListView)findViewById(R.id.listView1);
-		
+		emptyText=(TextView)findViewById(R.id.textView1);
+		listview.setEmptyView(emptyText);
 		
 		
 		String url_state = WebHelper.baseUrl+"State_Servlet";
@@ -224,6 +230,10 @@ public class TWActivity extends Activity
 				});
 		    	//end of tw custom dialog
 		       	
+		      
+				
+		       	
+		       	
 		      //add listner on search button
 				b_search.setOnClickListener(new OnClickListener() {
 					
@@ -251,6 +261,14 @@ public class TWActivity extends Activity
 			
 	}
 	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		finish();
+		
+	}
+
+	
 	//create adapter as inner class
 		class VehicleAdapter extends BaseAdapter
 		{
@@ -276,7 +294,60 @@ public class TWActivity extends Activity
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
 				
-				final Vehicle v1 = list_vehicle.get(position);
+				
+				//create custom dialog for user
+		        dlg_user=new android.app.Dialog(TWActivity.this);
+		    	dlg_user.setTitle("Please enter your name and contact");
+		    	dlg_user.setContentView(R.layout.user_dialog);
+		    	final EditText edit_name=(EditText)dlg_user.findViewById(R.id.editText1);
+		    	final EditText edit_contact=(EditText)dlg_user.findViewById(R.id.editText2);
+		       	final Button btnsub=(Button)dlg_user.findViewById(R.id.button1);
+		       	final Button  btncan=(Button)dlg_user.findViewById(R.id.button2);
+		       	
+		       
+		       	
+		       	btnsub.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+					String name=edit_name.getText().toString();
+					String contact=edit_contact.getText().toString();
+							if(!name.equals(null)&&!contact.equals(null))
+							{
+								String url=WebHelper.baseUrl+"User_Servlet";
+						
+							UserTask task = new UserTask();
+							task.execute(url,name,contact+"");
+							}
+							else 
+							{
+								if(name.equals(null))
+								{
+									Toast.makeText(TWActivity.this, 
+											"Please enter your name", 5).show();
+								}
+								else if(contact.equals(null))
+								{
+									Toast.makeText(TWActivity.this, 
+											"Please enter your contact no", 5).show();
+								}
+							}
+					}
+				});
+		       	
+		       	btncan.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						
+						dlg_user.dismiss();
+					}
+				});
+		    	//end of user custom dialog
+				
+				
+				 v1 = list_vehicle.get(position);
 				
 				//load the view/UI for item
 				LayoutInflater inf = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -310,19 +381,15 @@ public class TWActivity extends Activity
 					
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						Log.e("in on click","");
-						Intent in=new Intent(TWActivity.this,
-								VehicleDetailActivity.class);
 						
-						in.putExtra("vehicle",v1);
-						startActivity(in);
+						Log.e("in on click","");
+						dlg_user.show();
 					}
 				});
 				
 				int vehicle_id=v1.getVehicleId();
 				
-				String url=WebHelper.phpUrl+"/uploads/"+imageName;
+				String url=WebHelper.baseUrl+"/uploads/"+imageName;
 				Log.e("url shh",url);
 		        ImageTask imgtask=new ImageTask();
 		    	imgtask.execute(url,vehicle_id+"",image);
@@ -659,5 +726,95 @@ public class TWActivity extends Activity
 
 				  }
 		}
+		
+		class UserTask extends AsyncTask<String, Void , String> 
+		{
+			
+
+			String result="";
+			@Override
+			protected String doInBackground(String... params) {
+				// TODO Auto-generated method stub
+				HttpPost postReq=new HttpPost(params[0]);
+				BasicNameValuePair name= new BasicNameValuePair("name", params[1]);
+				BasicNameValuePair contact= new BasicNameValuePair("mobile_no", params[2]);
+				ArrayList<BasicNameValuePair> listPairs= new ArrayList<BasicNameValuePair>();
+				listPairs.add(name);
+				listPairs.add(contact);
+				try
+				{
+					UrlEncodedFormEntity entity= new UrlEncodedFormEntity(listPairs);
+					postReq.setEntity(entity);
+					//send request to server
+					HttpClient client= new DefaultHttpClient();
+					HttpResponse resp= client.execute(postReq);
+					InputStream in=resp.getEntity().getContent();
+					InputStreamReader reader= new InputStreamReader(in);
+					BufferedReader br = new BufferedReader(reader);
+				
+					
+					while(true)
+						
+					{
+						String s=br.readLine();
+						//Log.e("value of s",s);
+						if(s==null)
+						{
+							break;
+							
+						}
+						result=result+s;
+					}
+					Log.e("result is:",result);
+					
+					br.close();
+				
+				}
+				catch(Exception e)
+				{
+					Log.e("error2",e.getMessage());
+				}
+				return result;
+			}
+			
+			@Override
+			protected void onPostExecute(String result) {
+				// TODO Auto-generated method stub
+				super.onPostExecute(result);
+				
+				if(result.equals("1"))
+				{
+					Toast.makeText(getApplicationContext(), "submitted successfully", 5).show();
+					dlg_user.dismiss();
+					Intent in=new Intent(TWActivity.this,
+							VehicleDetailActivity.class);
+					
+					in.putExtra("vehicle",v1);
+					
+					startActivity(in);
+				}
+				else
+				{
+					Toast.makeText(getApplicationContext(), "error submit enter your data again", 5).show();
+					
+					
+				}
+				
+				
+			}
+			
+			protected void onCancelled() {
+				   
+				   Toast toast = Toast.makeText(getApplicationContext(), 
+				     "Error connecting to Server", Toast.LENGTH_LONG);
+				   toast.setGravity(Gravity.TOP, 25, 400);
+				   toast.show();
+
+				  }
+
+			
+			
+			}
+		
 
 }

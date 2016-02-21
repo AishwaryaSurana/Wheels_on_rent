@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="gen"/>
-	<classpathentry exported="true" kind="lib" path="E:/study material sheetal/sheetal/android-sdk_r24.3.3-windows/android-sdk-windows/platforms/android-22/android.jar" sourcepath="E:/study material sheetal/sheetal/android-sdk_r24.3.3-windows/android-sdk-windows/sources/android-22">
+	<classpathentry kind="lib" path="C:/Users/User/android-sdks/platforms/android-22/android.jar" sourcepath="C:/Users/User/android-sdks/sources/android-22">
 		<attributes>
-			<attribute name="javadoc_location" value="file:/E:/study material sheetal/sheetal/android-sdk_r24.3.3-windows/android-sdk-windows/docs/reference"/>
+			<attribute name="javadoc_location" value="file:/C:/Users/User/android-sdks/docs/reference"/>
 		</attributes>
 		<accessrules>
 			<accessrule kind="nonaccessible" pattern="com/android/internal/**"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/TravelaOld/libs/gson-2.2.2.jar"/>
-	<classpathentry exported="true" kind="src" path="/android-support-v7-appcompat"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/Vaibhav/new_workspace/appcompat_v7/libs/android-support-v7-appcompat.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

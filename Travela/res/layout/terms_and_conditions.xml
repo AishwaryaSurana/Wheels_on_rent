@@ -5,19 +5,28 @@
     android:orientation="vertical"
     android:gravity="center" >
 
-    <EditText
-        android:id="@+id/editText1"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:ems="10"
-        android:inputType="textMultiLine"
-        android:editable="false" 
-        android:background="#dfdfd2"
-        android:scrollbarAlwaysDrawVerticalTrack="true"
-        android:layout_margin="20dp">
+<!--     <EditText -->
+<!--         android:id="@+id/editText1" -->
+<!--         android:layout_width="match_parent" -->
+<!--         android:layout_height="400dp" -->
+<!--         android:ems="10" -->
+<!--         android:inputType="textMultiLine" -->
+<!--         android:editable="false"  -->
+<!--         android:background="#dfdfd2" -->
+<!--         android:scrollbarAlwaysDrawVerticalTrack="true" -->
+<!--         android:layout_margin="20dp"> -->
 		
         
-    </EditText>
+<!--     </EditText> -->
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:background="#dfdfd2"
+        android:layout_margin="20dp"
+        android:scrollbars="vertical"
+        />
 
     <Button
         android:id="@+id/button1"

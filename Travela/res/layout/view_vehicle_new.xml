@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" 
-    android:layout_marginTop="60dp">
+    android:layout_marginTop="50dp">
 
    
 	 
@@ -15,5 +15,13 @@
        >
        
     </ListView>
-	     
+	
+     <TextView
+        android:id="@+id/textView1"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="list of vehicles will appear here"
+        android:textColor="#027cd5" />
+    
 </LinearLayout>

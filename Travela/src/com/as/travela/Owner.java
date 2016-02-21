@@ -22,6 +22,14 @@ public class Owner
         this.owner_id = owner_id;
     }
 
+    public Owner(String name, String surname, String contact_no, String password, int owner_id) {
+        this.name = name;
+        this.surname = surname;
+        this.contact_no = contact_no;
+        this.password = password;
+        this.owner_id = owner_id;
+    }
+    
     public int getId() {
         return owner_id;
     }

@@ -26,6 +26,7 @@ public class SplashScreen extends Activity {
 					Intent intent = new Intent(SplashScreen.this,
 							VehiclePhotoActivity.class);
 					intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+					
 					startActivity(intent);
 					SplashScreen.this.finish();
 				} catch (InterruptedException e) {

@@ -5,11 +5,9 @@ package com.as.travela;
  */
 public class WebHelper
 {
-	public static final String IP="192.168.1.9";
-    public static final String baseUrl="http://"+IP+":8084/TravelaWebApp/";
-    public static final String phpUrl="http://"+IP+"/PhpProject1";
-    public static final String dbname="wheels_on_rent";
-    public static final String userName="root";
-    public static final String password="root";
-    
+	public static final String IP="158.69.48.50";
+    public static final String baseUrl="http://"+IP+":8080/TravelaWebApp/";
+    public static final String dbname="wheels";
+    public static final String userName="wheels_user";
+    public static final String password="E159rch@";
 }

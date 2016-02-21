@@ -62,5 +62,13 @@
        >
        
     </ListView>
+    
+     <TextView
+        android:id="@+id/textView1"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="list of vehicles will appear here"
+        android:textColor="#027cd5" />
 	     
 </LinearLayout>

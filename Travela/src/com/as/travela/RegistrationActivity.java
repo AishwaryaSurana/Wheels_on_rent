@@ -4,6 +4,8 @@ package com.as.travela;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import org.apache.http.HttpResponse;
@@ -12,11 +14,8 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -36,6 +35,7 @@ import com.google.gson.Gson;
 /**
  * Created by Aishwarya on 23-Dec-15.
  */
+@SuppressWarnings("deprecation")
 public class RegistrationActivity extends ActionBarActivity 
 {
     EditText ed1, ed2, ed3, ed4,ed5,ed6;
@@ -87,15 +87,18 @@ public class RegistrationActivity extends ActionBarActivity
 			}
 		 });
 
-		ed3.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+		ed3.setOnEditorActionListener(new EditText.OnEditorActionListener() 
+		{
 
 			@Override
 			public boolean onEditorAction(TextView v, int actionId,
 					KeyEvent event)
-			{ if (actionId == EditorInfo.IME_ACTION_DONE) {
+			{ 
+				if (actionId == EditorInfo.IME_ACTION_DONE)
+				{
 	             b.performClick();
 	             return true;
-	         }
+				}
 	      	return false;
 			}
 		 });
@@ -105,7 +108,8 @@ public class RegistrationActivity extends ActionBarActivity
 			@Override
 			public boolean onEditorAction(TextView v, int actionId,
 					KeyEvent event)
-			{ if (actionId == EditorInfo.IME_ACTION_DONE) {
+			{
+				if (actionId == EditorInfo.IME_ACTION_DONE) {
 	             b.performClick();
 	             return true;
 	         }
@@ -118,10 +122,12 @@ public class RegistrationActivity extends ActionBarActivity
 			@Override
 			public boolean onEditorAction(TextView v, int actionId,
 					KeyEvent event)
-			{ if (actionId == EditorInfo.IME_ACTION_DONE) {
+			{ 
+			if (actionId == EditorInfo.IME_ACTION_DONE) 
+			{
 	             b.performClick();
 	             return true;
-	         }
+	        }
 	      	return false;
 			}
 		 });
@@ -146,18 +152,21 @@ public class RegistrationActivity extends ActionBarActivity
             public void onClick(View v)
             {
             
-            	String name, surname, contact, email, password,confirmpassword,address;
+            	String name, surname, contact, email, password,confirmpassword;
             	boolean flag=false;
             	name = ed1.getText().toString();
                 surname = ed2.getText().toString();
                 contact = ed3.getText().toString();
+                if(contact.length()<10)
+                {
+                	Toast.makeText(RegistrationActivity.this,"Enter valid number", Toast.LENGTH_SHORT).show();
+                	contact="";
+                }
                 email = ed4.getText().toString();
                 password=ed5.getText().toString();
                 confirmpassword=ed6.getText().toString();
                 Log.e("name",name+surname);
-                if((name!=null&&surname!=null&&contact!=null&&password!=null&&
-                	confirmpassword!=null)&&!(name.equals("")&&surname.equals("")&&
-                	contact.equals("")&&password.equals("")&&confirmpassword.equals("")))
+                if(!(name.equals("")||surname.equals("")||contact.equals("")||password.equals("")||confirmpassword.equals("")))
                 	{
                 	flag=true;
                 	}
@@ -175,13 +184,13 @@ public class RegistrationActivity extends ActionBarActivity
                 switch (c)
                 {
 				case 1:
-					email="";
+					email=null;
 	                break;
 				case 2:
 					if(!email.contains("@")&&!email.contains("."))
 					{
-						Toast.makeText(RegistrationActivity.this, "Email Invalid", 3).show();
-						email="";
+						Toast.makeText(RegistrationActivity.this, "Email Invalid", Toast.LENGTH_SHORT).show();
+						email=null;
 					}
 					
 					break;
@@ -189,7 +198,7 @@ public class RegistrationActivity extends ActionBarActivity
 				default:
 					break;
 				}
-                }
+               }
                 if(flag==true)
                 {
                 	if(password.equals(confirmpassword))
@@ -197,9 +206,17 @@ public class RegistrationActivity extends ActionBarActivity
 	                Owner o= new Owner(name, surname, contact, email,password,0);
 	                Gson g=new Gson();
 	                String json=g.toJson(o);
-	                String url = WebHelper.baseUrl + "/RegistrationServlet";/*name of servlet needed to be launched*/
+	                String u = WebHelper.baseUrl + "/RegistrationServlet";/*name of servlet needed to be launched*/
+	                URL url = null;
+	                try {
+						url=new URL(u);
+						Log.e("Url b4",url+"");
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 	                RegistrationTask task = new RegistrationTask();
-	                task.execute(url,json);
+	                task.execute(url+"",json);
 	            	//Toast.makeText(RegistrationActivity.this, "Registered "
 	            		//	+ "password",Toast.LENGTH_LONG).show();
 	            	
@@ -212,7 +229,7 @@ public class RegistrationActivity extends ActionBarActivity
                 }
                 else
                 {
-                	Toast.makeText(RegistrationActivity.this, "Enter required fields", 5).show();
+                	Toast.makeText(RegistrationActivity.this, "Enter required fields", Toast.LENGTH_SHORT).show();
                     	
                 }
 
@@ -221,14 +238,25 @@ public class RegistrationActivity extends ActionBarActivity
         });
 
        }
+    
+
+    @Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		finish();
+	 	
+	}
+
+    
 	class RegistrationTask extends AsyncTask<String, Void, String>
 	{
-		@SuppressWarnings("deprecation")
 		@Override
 		protected String doInBackground(String... params) {
 		
 			HttpPost postReq=new HttpPost(params[0]);
-			
+
+			Log.e("Url in do in",params[0]+"");
+	
 			//prepare entry to store email/password
 			BasicNameValuePair pair1=
 					new BasicNameValuePair("ownerdata", params[1]);			
@@ -266,7 +294,7 @@ public class RegistrationActivity extends ActionBarActivity
 			}
 			catch(Exception ex)
 			{
-				Log.e("Error",ex+"");
+				Log.e("Error reg",ex+"");
 				
 			}
 			
@@ -285,6 +313,7 @@ public class RegistrationActivity extends ActionBarActivity
 				Intent in=new Intent(RegistrationActivity.this,
 						LoginActivity.class);
 				startActivity(in);
+				RegistrationActivity.this.finish();
 		
 			}
 			else

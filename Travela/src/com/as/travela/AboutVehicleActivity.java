@@ -15,9 +15,9 @@ import android.widget.Toast;
 public class AboutVehicleActivity extends TabActivity
 { /** Called when the activity is first created. */
 	TextView textUser,textContact;
+	ImageButton bImgLogout;
 	
-	// Session Manager Class
-    SessionManager session;
+	
 
 	
     @SuppressWarnings("deprecation")
@@ -25,28 +25,18 @@ public class AboutVehicleActivity extends TabActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        
-        //image button logout
-        ImageButton bImgLogout=(ImageButton)findViewById(R.id.imageButton1);
-        
-        // Session class instance
-        session = new SessionManager(getApplicationContext());
-        
-        
-        
-        Toast.makeText(getApplicationContext(), "User Login Status: " + session.isLoggedIn(), Toast.LENGTH_LONG).show();
-        
-        
-        /**
+        	/**
          * Call this function whenever you want to check user login
          * This will redirect user to LoginActivity is he is not
          * logged in
          * */
-        session.checkLogin();
+        
 
         
         setContentView(R.layout.about_vehicle);
         textUser=(TextView)findViewById(R.id.textView1);
+        bImgLogout=(ImageButton)findViewById(R.id.imageButton1);
+        
         SharedPreferences sp=getSharedPreferences("settings",MODE_PRIVATE);
     	String name=sp.getString("name", "");
     	int ownerId=sp.getInt("owner_id",0);
@@ -63,13 +53,14 @@ public class AboutVehicleActivity extends TabActivity
         TabSpec viewspec = tabHost.newTabSpec("View Vehicle");
         // setting Title and Icon for the Tab
         viewspec.setIndicator("View Vehicle", getResources().getDrawable(R.drawable.icon_view_tab));
-        Intent viewIntent = new Intent(this, ViewVehicleActivity.class);
+        Intent viewIntent = new Intent(this,ViewVehicleActivity.class);
         viewspec.setContent(viewIntent);
         
         
         // Adding all TabSpec to TabHost
-        tabHost.addTab(addspec); // Adding add vehicle tab
+       
         tabHost.addTab(viewspec); // Adding view vehicle tab
+        tabHost.addTab(addspec); // Adding add vehicle tab
         
         
         for(int i=0;i<tabHost.getTabWidget().getChildCount();i++) 
@@ -86,6 +77,7 @@ public class AboutVehicleActivity extends TabActivity
 				// TODO Auto-generated method stub
 				SessionManager session= new SessionManager(getApplicationContext());
 				session.logoutUser();
+				finishAffinity();
 			}
 		});
         
